@@ -22,4 +22,10 @@ class Doctor extends Model
     {
         return $this->belongsToMany(Patient::class);
     }
+    // Doctor.php
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }

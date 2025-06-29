@@ -15,35 +15,31 @@ class AppointmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // return parent::toArray($request);
-
-    return [
+        
+        return [
             'patient' => [
                 'id' => $this->patient->id ?? null,
+                'name' => $this->patient->user->name ?? null,
                 'gender' => $this->patient->gender ?? null,
                 'phone' => $this->patient->phone ?? null,
-                'user_id' => $this->patient->user_id ?? null,
                 'address' => $this->patient->address ?? null,
                 'date_of_birth' => $this->patient->date_of_birth ?? null,
-                'appointments' => $this->patient->appointments->map(function ($appointment) {
-                    return [
-                        'id' => $appointment->id,
-                        'appointment_date' => $appointment->appointment_date,
-                        'start_time' => $appointment->start_time,
-                        'end_time' => $appointment->end_time,
-                        'status' => $appointment->status,
-                        'notes' => $appointment->notes,
-                    ];
-                }),
             ],
 
-
+            'appointment' => [
+                'id' => $this->id,
+                'appointment_date' => $this->appointment_date,
+                'start_time' => $this->start_time,
+                'end_time' => $this->end_time,
+                'status' => $this->status,
+                'notes' => $this->notes,
+            ],
 
             'doctor' => $this->doctor ? [
                 'id' => $this->doctor->id,
-        'user_id' => $this->doctor->user_id ?? null,
-
-                'specialization' => $this->doctor->specialization_id,
+                'name' => $this->doctor->user->name ?? null,
+                'specialization' => $this->doctor->specialty->name ?? null,
+                'phone' => $this->doctor->user->phone ?? null,
             ] : null
         ];
     }
