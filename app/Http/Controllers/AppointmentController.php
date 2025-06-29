@@ -14,8 +14,8 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $appointments = Appointment::all();
-        return AppointmentResource::collection($appointments);
+         $appointments = Appointment::with(['doctor', 'patient.appointments'])->get();
+    return AppointmentResource::collection($appointments);
     }
 
     /**
@@ -32,7 +32,7 @@ class AppointmentController extends Controller
      */
    public function show(string $id)
 {
-    $appointment = Appointment::find($id);
+    $appointment = Appointment::with(['doctor', 'patient.appointments'])->find($id);
 
     if (!$appointment) {
         return response()->json([
