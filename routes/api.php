@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Doctor\DoctorAppointmentController;
+use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\Doctor\HomeController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppointmentController;
@@ -28,3 +29,12 @@ Route::get('doctor/appointments/{id}', [DoctorAppointmentController::class, 'sho
 // Doctor appointments -> update appointment status
 Route::put('doctor/appointments/{id}/status', [DoctorAppointmentController::class, 'updateStatus'])
     ->name('doctor.appointments.updateStatus');
+// Doctor Slots -> get all time slots for a doctor
+Route::get('doctor/time-slots', [DoctorTimeSlotsController::class, 'index'])
+    ->name('doctor.time-slots.index');
+// Doctor Slots -> add a new time slot for a doctor
+Route::post('doctor/time-slots/store', [DoctorTimeSlotsController::class, 'store'])
+    ->name('doctor.time-slots.store');
+// Doctor Slots -> delete a time slot for a doctor
+Route::delete('doctor/time-slots/{id}', [DoctorTimeSlotsController::class, 'destroy'])
+    ->name('doctor.time-slots.destroy');
