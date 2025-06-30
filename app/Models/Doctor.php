@@ -34,6 +34,10 @@ class Doctor extends Model
     {
         return $this->belongsTo(Specialty::class);
     }
-    // relationship with Role
+    // relationship with slots
+    public function Slot()
+    {
+        return $this->hasMany(Slot::class, 'doctor_id');
+    }
 
 }
