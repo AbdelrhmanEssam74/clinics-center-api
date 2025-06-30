@@ -19,3 +19,12 @@ Route::get('doctor/profile/{id}', [HomeController::class, 'home'])
 // Doctor appointments -> get all appointments for a doctor
 Route::get('doctor/appointments', [DoctorAppointmentController::class, 'index'])
     ->name('doctor.appointments.index');
+// Doctor appointments -> get upcoming appointments for a doctor
+Route::get('doctor/appointments/upcoming', [DoctorAppointmentController::class, 'upcoming'])
+    ->name('doctor.appointments.upcoming');
+// Doctor appointments -> get specific appointment for a doctor
+Route::get('doctor/appointments/{id}', [DoctorAppointmentController::class, 'show'])
+    ->name('doctor.appointments.show');
+// Doctor appointments -> update appointment status
+Route::put('doctor/appointments/{id}/status', [DoctorAppointmentController::class, 'updateStatus'])
+    ->name('doctor.appointments.updateStatus');
