@@ -14,8 +14,8 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $appointments = Appointment::all();
-        return AppointmentResource::collection($appointments);
+        $appointments = Appointment::with('doctor.user', 'patient')->get();
+    return AppointmentResource::collection($appointments);
     }
 
     /**
@@ -31,17 +31,15 @@ class AppointmentController extends Controller
      * Display the specified resource.
      */
    public function show(string $id)
-{
-    $appointment = Appointment::find($id);
+{  $appointment = Appointment::with('doctor.user', 'patient')->find($id);
 
     if (!$appointment) {
-        return response()->json([
-            'message' => "This appointment was not found."
-        ], 404);
+        return response()->json(['message' => "This appointment was not found."], 404);
     }
 
     return new AppointmentResource($appointment);
-}
+    }
+
 
     /**
      * Update the specified resource in storage.
