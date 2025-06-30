@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Doctor\DoctorAppointmentController;
 use App\Http\Controllers\API\Doctor\HomeController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppointmentController;
@@ -13,5 +14,8 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('appointments', AppointmentController::class);
 
 // Doctor API routes - Abdelrhman
-Route::get('doctor/{id}', [HomeController::class, 'home'])
-    ->name('doctor.home');
+Route::get('doctor/profile/{id}', [HomeController::class, 'home'])
+    ->name('doctor.profile');
+// Doctor appointments -> get all appointments for a doctor
+Route::get('doctor/appointments', [DoctorAppointmentController::class, 'index'])
+    ->name('doctor.appointments.index');
