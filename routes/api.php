@@ -10,4 +10,3 @@ Route::get('/user', function (Request $request) {
 
 // appointments
 Route::apiResource('appointments', AppointmentController::class);
-
