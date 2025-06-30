@@ -13,5 +13,5 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('appointments', AppointmentController::class);
 
 // Doctor API routes - Abdelrhman
-Route::get('doctor/home', [HomeController::class, 'APITest'])
+Route::get('doctor/{id}', [HomeController::class, 'home'])
     ->name('doctor.home');
