@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Doctor\DoctorAppointmentController;
+use App\Http\Controllers\API\Doctor\DoctorPatientController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\Doctor\HomeController;
 use Illuminate\Http\Request;
@@ -38,3 +39,9 @@ Route::post('doctor/time-slots/store', [DoctorTimeSlotsController::class, 'store
 // Doctor Slots -> delete a time slot for a doctor
 Route::delete('doctor/time-slots/{id}', [DoctorTimeSlotsController::class, 'destroy'])
     ->name('doctor.time-slots.destroy');
+// Doctor Patients -> get all patients who had appointments with the doctor
+Route::get('doctor/patients', [DoctorPatientController::class, 'index'])
+    ->name('doctor.patients.index');
+// Doctor Patients -> get specific patient by id
+Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
+    ->name('doctor.patients.show');
