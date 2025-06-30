@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Specialty extends Model
 {
-    //
+    protected $table = 'specialties'; 
     protected $fillable = ['name', 'description'];
     // Define the relationship with Doctor
     public function doctors()
