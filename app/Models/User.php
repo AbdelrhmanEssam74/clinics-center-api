@@ -52,4 +52,10 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+
+    // relation with patient
+    public function patient()
+    {
+        return $this->hasOne(Patient::class);
+    }
 }
