@@ -8,9 +8,9 @@ class Doctor extends Model
 {
     protected $fillable = [
 
-        'specialization',
-       'user_id',
-        'address',
+        'specialty_id',
+        'user_id',
+        'experience_years',
     ];
 
     public function appointments()
@@ -22,14 +22,20 @@ class Doctor extends Model
     {
         return $this->belongsToMany(Patient::class);
     }
-    // Doctor.php
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
-public function specialty()
-{
-    return $this->belongsTo(Specialty::class, 'specialty_id', 'id');
 
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class)->with('role');
+    }
+
+// relationship with Specialty
+    public function specialty()
+    {
+        return $this->belongsTo(Specialty::class);
+    }
+    // relationship with slots
+    public function Slot()
+    {
+        return $this->hasMany(Slot::class, 'doctor_id');
+    }
 }

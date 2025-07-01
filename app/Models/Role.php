@@ -4,15 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Specialty extends Model
+class Role extends Model
 {
+    //
     protected $fillable = [
         'name',
-        'description',
     ];
-
-    public function doctors()
+       public function users()
     {
-        return $this->hasMany(Doctor::class);
+        return $this->hasMany(User::class);
     }
 }
