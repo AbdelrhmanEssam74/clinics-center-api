@@ -6,11 +6,25 @@ use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\Doctor\HomeController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\users\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// add and edit and delete and show user to admin
+Route::apiResource('users', UserController::class);
+
+//  auth register 
+Route::post('register',[AuthController::class,'register']);
+// auth login
+Route::post('login',[AuthController::class,'login']);
+// auth profile
+Route::get('profile',[AuthController::class,'profile'])->middleware('auth:sanctum');
+// auth logout
+Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 
 // appointments
 Route::apiResource('appointments', AppointmentController::class);
