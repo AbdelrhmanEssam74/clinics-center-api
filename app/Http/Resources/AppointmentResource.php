@@ -15,7 +15,7 @@ class AppointmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        
+
         return [
             'patient' => [
                 'id' => $this->patient->id ?? null,
@@ -36,11 +36,11 @@ class AppointmentResource extends JsonResource
             ],
 
             'doctor' => $this->doctor ? [
-                'id' => $this->doctor->id,
-                'name' => $this->doctor->user->name ?? null,
-                'specialization' => $this->doctor->specialty->name ?? null,
-                'phone' => $this->doctor->user->phone ?? null,
-            ] : null
+    'id' => $this->doctor->id,
+    'name' => $this->doctor->user->name ?? null,
+    'specialization' => $this->doctor->specialty->name ?? null,
+    'phone' => $this->doctor->user->phone ?? null,
+] : null,
         ];
     }
 }

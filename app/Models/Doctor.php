@@ -23,7 +23,6 @@ class Doctor extends Model
         return $this->belongsToMany(Patient::class);
     }
 
-    // Doctor.php
     public function user()
     {
         return $this->belongsTo(User::class)->with('role');
@@ -39,5 +38,4 @@ class Doctor extends Model
     {
         return $this->hasMany(Slot::class, 'doctor_id');
     }
-
 }
