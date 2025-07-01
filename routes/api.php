@@ -5,7 +5,8 @@ use App\Http\Controllers\API\Doctor\DoctorPatientController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\Doctor\HomeController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Patient\AppointmentController;
+
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\users\UserController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
+Route::apiResource('appointments/patient', AppointmentController::class);
 // add and edit and delete and show user to admin
 Route::apiResource('users', UserController::class);
 
@@ -26,8 +29,6 @@ Route::get('profile',[AuthController::class,'profile'])->middleware('auth:sanctu
 // auth logout
 Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 
-// appointments
-Route::apiResource('appointments', AppointmentController::class);
 
 // Doctor API routes - Abdelrhman
 Route::get('doctor/profile/{id}', [HomeController::class, 'home'])
@@ -59,3 +60,4 @@ Route::get('doctor/patients', [DoctorPatientController::class, 'index'])
 // Doctor Patients -> get specific patient by id
 Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
     ->name('doctor.patients.show');
+
