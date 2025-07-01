@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Doctor\DoctorPatientController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\Doctor\HomeController;
 use Illuminate\Http\Request;
+
 use App\Http\Controllers\Patient\AppointmentController;
 
 use App\Http\Controllers\Auth\AuthController;
@@ -60,4 +61,22 @@ Route::get('doctor/patients', [DoctorPatientController::class, 'index'])
 // Doctor Patients -> get specific patient by id
 Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
     ->name('doctor.patients.show');
+
+    // search task
+
+    // get all doctors
+Route::get('/doctors', [DoctorController::class, 'index'])
+    ->name('show.all.doctors');
+
+// get specific doctor by speciality
+Route::get('/doctors/speciality/{specialty}', [DoctorController::class, 'getBySpecialty'])
+    ->name('show.doctor.specialty');
+
+    // get specific doctor by id
+Route::get('/doctors/name/{name}', [DoctorController::class, 'getByName'])
+    ->name('show.doctor.name');
+    
+    //get doctor's available time slots
+Route::get('/doctors/{id}/time_slots', [DoctorController::class, 'getAvailTimeSlots'])
+    ->name('show.doctor.time-slots'); 
 
