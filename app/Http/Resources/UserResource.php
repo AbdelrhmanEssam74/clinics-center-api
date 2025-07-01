@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'image' => $this->image ? asset('storage/' . $this->image) : null,
             'profile_description' => $this->profile_description,
             'role_id' => $this->role_id,
-            'created_at' => $this->created_at->toDateTimeString(),
-        ];    }
+            'created_at' => optional($this->created_at)->toDateTimeString(),
+        ];
+    }
 }

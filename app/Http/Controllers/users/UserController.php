@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\users;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -8,6 +9,8 @@ use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\Hash;
+
+use function Pest\Laravel\json;
 
 class UserController extends Controller
 {
@@ -26,7 +29,6 @@ class UserController extends Controller
         $users = $query->get();
 
         return UserResource::collection($users);
-
     }
 
     /**
@@ -44,7 +46,12 @@ class UserController extends Controller
 
         $user = User::create($data);
 
-        return new UserResource($user);
+        $user = new UserResource($user);
+        $token = $user->createToken('auth_token')->plainTextToken;
+        return response()->json([
+            "user" => $user,
+            "token" => $token
+        ]);
     }
 
     /**
@@ -81,18 +88,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if(!$user){
-            return response().join(['massage'=>"User Not Found"]);
+        if (!$user) {
+            return response() . join(['massage' => "User Not Found"]);
+        } else {
+            $user->delete();
 
-        }
-        else{
-        $user->delete();
-
-        return response()->json(['massage'=>"user deleted sucssfully"], 200);
-
+            return response()->json(['massage' => "user deleted sucssfully"], 200);
         }
     }
-
-
-
 }
