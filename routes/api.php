@@ -19,7 +19,7 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('appointments/patient', PatientAppointmentController::class);
 
 
-// add and edit and delete and show user to admin
+// add and edit and delete and show user to admin  =>ahmed abdelhalim
 Route::apiResource('users', UserController::class);
 
 //  auth register
