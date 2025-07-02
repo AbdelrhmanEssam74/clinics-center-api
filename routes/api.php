@@ -34,13 +34,13 @@ Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum
 
 // Doctor API routes - Abdelrhman
 Route::get('doctor/profile/{id}', [DoctorHomeController::class, 'home'])
-    ->name('doctor.profile');
+    ->name('doctor.profile')->middleware('auth:sanctum');
 // Doctor appointments -> get all appointments for a doctor
 Route::get('doctor/appointments', [DoctorAppointmentController::class, 'index'])
-    ->name('doctor.appointments.index');
+    ->name('doctor.appointments.index')->middleware('auth:sanctum');
 // Doctor appointments -> get upcoming appointments for a doctor
 Route::get('doctor/appointments/upcoming', [DoctorAppointmentController::class, 'upcoming'])
-    ->name('doctor.appointments.upcoming');
+    ->name('doctor.appointments.upcoming')->middleware('auth:sanctum');
 // Doctor appointments -> get specific appointment for a doctor
 Route::get('doctor/appointments/{id}', [DoctorAppointmentController::class, 'show'])
     ->name('doctor.appointments.show');
