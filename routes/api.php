@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\Doctor\DoctorAppointmentController;
 use App\Http\Controllers\API\Doctor\DoctorHomeController;
 use App\Http\Controllers\API\Doctor\DoctorPatientController;
+use App\Http\Controllers\API\Doctor\DoctorProfileController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\patient\PatientAppointmentController;
 use App\Http\Controllers\API\patient\PatientProfileController;
@@ -93,3 +94,15 @@ Route::get('patient/profile', [PatientProfileController::class, 'show'])
 Route::put('patient/profile/update', [PatientProfileController::class, 'update'])
     ->name('patient.profile.update')
     ->middleware('auth:sanctum');
+
+
+    //  doctor profile
+    Route::middleware('auth:sanctum')->group(function () {
+        // doctor profile
+        Route::get('doctor/profile', [DoctorProfileController::class, 'show'])
+            ->name('doctor.profile.show');
+
+    // update doctor profile
+        Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
+            ->name('doctor.profile.update');
+    });
