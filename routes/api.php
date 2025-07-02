@@ -1,27 +1,28 @@
 <?php
 
 use App\Http\Controllers\API\Doctor\DoctorAppointmentController;
+use App\Http\Controllers\API\Doctor\DoctorHomeController;
 use App\Http\Controllers\API\Doctor\DoctorPatientController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
-use App\Http\Controllers\API\Doctor\HomeController;
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\Patient\AppointmentController;
-
+use App\Http\Controllers\API\patient\AppointmentController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\users\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
+// Patient API routes - Ahmed sayed
 Route::apiResource('appointments/patient', AppointmentController::class);
+
+
 // add and edit and delete and show user to admin
 Route::apiResource('users', UserController::class);
 
-//  auth register 
+//  auth register
 Route::post('register',[AuthController::class,'register']);
 // auth login
 Route::post('login',[AuthController::class,'login']);
@@ -32,7 +33,7 @@ Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum
 
 
 // Doctor API routes - Abdelrhman
-Route::get('doctor/profile/{id}', [HomeController::class, 'home'])
+Route::get('doctor/profile/{id}', [DoctorHomeController::class, 'home'])
     ->name('doctor.profile');
 // Doctor appointments -> get all appointments for a doctor
 Route::get('doctor/appointments', [DoctorAppointmentController::class, 'index'])
@@ -75,8 +76,8 @@ Route::get('/doctors/speciality/{specialty}', [DoctorController::class, 'getBySp
     // get specific doctor by id
 Route::get('/doctors/name/{name}', [DoctorController::class, 'getByName'])
     ->name('show.doctor.name');
-    
+
     //get doctor's available time slots
 Route::get('/doctors/{id}/time_slots', [DoctorController::class, 'getAvailTimeSlots'])
-    ->name('show.doctor.time-slots'); 
+    ->name('show.doctor.time-slots');
 
