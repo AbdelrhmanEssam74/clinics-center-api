@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Doctor\DoctorHomeController;
 use App\Http\Controllers\API\Doctor\DoctorPatientController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\patient\PatientAppointmentController;
+use App\Http\Controllers\API\patient\PatientProfileController;
 use App\Http\Controllers\API\Search\SearchController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\users\UserController;
@@ -81,3 +82,14 @@ Route::get('/search/doctors/name/{name}', [SearchController::class, 'getByName']
 Route::get('/search/doctors/time_slots/{id}', [SearchController::class, 'getAvailTimeSlots'])
     ->name('show.doctor.time-slots');
 
+    
+// patient profile 
+Route::get('patient/profile', [PatientProfileController::class, 'show'])
+    ->name('patient.profile.show')
+    ->middleware('auth:sanctum');  
+    
+    
+// update patient profile
+Route::put('patient/profile/update', [PatientProfileController::class, 'update'])
+    ->name('patient.profile.update')
+    ->middleware('auth:sanctum');
