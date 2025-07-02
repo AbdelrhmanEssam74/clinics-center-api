@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 
-class AppointmentController extends Controller
+class PatientAppointmentController extends Controller
 {
     /**
      * Display a listing of the resource.

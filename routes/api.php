@@ -4,7 +4,7 @@ use App\Http\Controllers\API\Doctor\DoctorAppointmentController;
 use App\Http\Controllers\API\Doctor\DoctorHomeController;
 use App\Http\Controllers\API\Doctor\DoctorPatientController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
-use App\Http\Controllers\API\patient\AppointmentController;
+use App\Http\Controllers\API\patient\PatientAppointmentController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\users\UserController;
@@ -16,7 +16,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // Patient API routes - Ahmed sayed
-Route::apiResource('appointments/patient', AppointmentController::class);
+Route::apiResource('appointments/patient', PatientAppointmentController::class);
 
 
 // add and edit and delete and show user to admin
