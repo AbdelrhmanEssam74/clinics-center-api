@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
 
-class HomeController extends Controller
+class DoctorHomeController extends Controller
 {
     public function home($id)
     {
