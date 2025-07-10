@@ -23,13 +23,13 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'phone' => 'nullable|string|max:20',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'profile_description' => 'nullable|string',
-            'role_id' => 'required|exists:roles,id',
-            'password' => 'required|string|min:6',
+        'name' => 'required|string|min:2',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:6',
+        'phone' => 'required|regex:/^[0-9]{10,15}$/',
+        'image' => 'required',
+        'profile_description' => 'nullable|string',
+        'role_id' => 'required|integer|exists:roles,id',
         ];
     }
     
