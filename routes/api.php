@@ -25,13 +25,13 @@ Route::apiResource('appointments/patient', PatientAppointmentController::class);
 Route::apiResource('users', UserController::class);
 
 //  auth register
-Route::post('register',[AuthController::class,'register']);
+Route::post('register', [AuthController::class, 'register']);
 // auth login
-Route::post('login',[AuthController::class,'login']);
+Route::post('login', [AuthController::class, 'login']);
 // auth profile
-Route::get('profile',[AuthController::class,'profile'])->middleware('auth:sanctum');
+Route::get('profile', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 // auth logout
-Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
 // Doctor API routes - Abdelrhman
@@ -75,13 +75,14 @@ Route::get('/search/doctors', [SearchController::class, 'index'])
 Route::get('/search/doctors/speciality/{specialty}', [SearchController::class, 'getBySpecialty'])
     ->name('show.doctor.specialty');
 
-    // get specific doctor by id
+// get specific doctor by id
 Route::get('/search/doctors/name/{name}', [SearchController::class, 'getByName'])
     ->name('show.doctor.name');
 
-    //get doctor's available time slots
+//get doctor's available time slots
 Route::get('/search/doctors/time_slots/{id}', [SearchController::class, 'getAvailTimeSlots'])
     ->name('show.doctor.time-slots');
+
 
     
 // patient profile 
@@ -95,14 +96,3 @@ Route::put('patient/profile/update', [PatientProfileController::class, 'update']
     ->name('patient.profile.update')
     ->middleware('auth:sanctum');
 
-
-    //  doctor profile
-    Route::middleware('auth:sanctum')->group(function () {
-        // doctor profile
-        Route::get('doctor/profile', [DoctorProfileController::class, 'show'])
-            ->name('doctor.profile.show');
-
-    // update doctor profile
-        Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
-            ->name('doctor.profile.update');
-    });

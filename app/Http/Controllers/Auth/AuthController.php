@@ -20,7 +20,10 @@ class AuthController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('users', 'public');
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('users', $filename, 'public');
+            $data['image'] = $path;
         }
 
         $data['password'] = Hash::make($data['password']);
