@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\User;
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Support\Facades\Gate;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +22,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+       
+        Gate::define('manage-profile', function ($user, $patient) {
+        return $user->id === $patient->user_id; 
+    });
+
+    Gate::define('doctor-profile', function (User $user,Doctor $doctor) {
+        return $user->id === $doctor->user_id; 
+    });
+
     }
 }

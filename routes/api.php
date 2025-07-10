@@ -3,8 +3,10 @@
 use App\Http\Controllers\API\Doctor\DoctorAppointmentController;
 use App\Http\Controllers\API\Doctor\DoctorHomeController;
 use App\Http\Controllers\API\Doctor\DoctorPatientController;
+use App\Http\Controllers\API\Doctor\DoctorProfileController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\patient\PatientAppointmentController;
+use App\Http\Controllers\API\patient\PatientProfileController;
 use App\Http\Controllers\API\Search\SearchController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\users\UserController;
@@ -34,13 +36,13 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 // Doctor API routes - Abdelrhman
 Route::get('doctor/profile/{id}', [DoctorHomeController::class, 'home'])
-    ->name('doctor.profile');
+    ->name('doctor.profile')->middleware('auth:sanctum');
 // Doctor appointments -> get all appointments for a doctor
 Route::get('doctor/appointments', [DoctorAppointmentController::class, 'index'])
-    ->name('doctor.appointments.index');
+    ->name('doctor.appointments.index')->middleware('auth:sanctum');
 // Doctor appointments -> get upcoming appointments for a doctor
 Route::get('doctor/appointments/upcoming', [DoctorAppointmentController::class, 'upcoming'])
-    ->name('doctor.appointments.upcoming');
+    ->name('doctor.appointments.upcoming')->middleware('auth:sanctum');
 // Doctor appointments -> get specific appointment for a doctor
 Route::get('doctor/appointments/{id}', [DoctorAppointmentController::class, 'show'])
     ->name('doctor.appointments.show');
@@ -80,3 +82,17 @@ Route::get('/search/doctors/name/{name}', [SearchController::class, 'getByName']
 //get doctor's available time slots
 Route::get('/search/doctors/time_slots/{id}', [SearchController::class, 'getAvailTimeSlots'])
     ->name('show.doctor.time-slots');
+
+
+    
+// patient profile 
+Route::get('patient/profile', [PatientProfileController::class, 'show'])
+    ->name('patient.profile.show')
+    ->middleware('auth:sanctum');  
+    
+    
+// update patient profile
+Route::put('patient/profile/update', [PatientProfileController::class, 'update'])
+    ->name('patient.profile.update')
+    ->middleware('auth:sanctum');
+

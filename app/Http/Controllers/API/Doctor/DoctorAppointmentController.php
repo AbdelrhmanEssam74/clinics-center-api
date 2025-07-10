@@ -12,7 +12,17 @@ class DoctorAppointmentController extends Controller
     // get all appointments for a doctor
     public function index(Request $request)
     {
-        $doctorId = 1;
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role_id !== 2) {
+            return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
+        }
+
+        $doctorId = $user->id;
         $appointments = Appointment::where('doctor_id', $doctorId)
             ->with(['patient'])
             ->get();
@@ -24,20 +34,41 @@ class DoctorAppointmentController extends Controller
     // get upcoming appointments for a doctor
     public function upcoming(Request $request)
     {
-        $doctorId = 1;
-        $appointments = Appointment::where('doctor_id', $doctorId)
-            ->where('appointment_date', '>=', Carbon::today())
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role_id !== 2) {
+            return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
+        }
+
+        $doctorId = $user->id;
+        $currentDateTime = Carbon::now();
+        $upcomingAppointments = Appointment::where('doctor_id', $doctorId)
+            ->where('appointment_date', '>', $currentDateTime)
             ->with(['patient'])
             ->get();
 
         return response()->json([
-            'appointments' => $appointments
+            'upcoming_appointments' => $upcomingAppointments
         ], 200);
     }
     // get specific appointment for a specific doctor
     public function show($id)
     {
-        $doctorId = 1;
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role_id !== 2) {
+            return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
+        }
+
+        $doctorId = $user->id;
         $appointment = Appointment::where('doctor_id', $doctorId)
             ->where('id', $id)
             ->with(['patient'])

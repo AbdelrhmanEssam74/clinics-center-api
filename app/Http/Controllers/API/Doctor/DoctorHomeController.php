@@ -10,11 +10,27 @@ class DoctorHomeController extends Controller
 {
     public function home($id)
     {
-        $doctor = Doctor::with(['specialty', 'appointments' , 'user', 'user.role'])
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role_id !== 2) {
+            return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
+        }
+
+        if ($user->id != $id) {
+            return response()->json(['message' => 'Forbidden: ID mismatch'], 403);
+        }
+
+        $doctor = Doctor::with(['specialty', 'appointments', 'user', 'user.role'])
             ->find($id);
+
         if (!$doctor) {
             return response()->json(['message' => 'Doctor not found'], 404);
         }
+
         return response()->json([
             'doctor' => $doctor
         ], 200);
