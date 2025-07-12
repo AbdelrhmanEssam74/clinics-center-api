@@ -65,24 +65,23 @@ Route::get('doctor/patients', [DoctorPatientController::class, 'index'])
 Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
     ->name('doctor.patients.show');
 
-
+    
 // search task - Mariam
-// Get all doctors
-Route::get('/search/doctors', [SearchController::class, 'index'])
+// // Get all doctors
+Route::get('/doctors', [SearchController::class, 'index'])
     ->name('show.all.doctors');
 
-// get a specific doctor by speciality
-Route::get('/search/doctors/speciality/{specialty}', [SearchController::class, 'getBySpecialty'])
-    ->name('show.doctor.specialty');
+    // get specific doctor by id
+    Route::get('/doctors/{id}', [SearchController::class, 'getById'])
+    ->name('show.doctor.id');
 
-// get specific doctor by id
-Route::get('/search/doctors/name/{name}', [SearchController::class, 'getByName'])
-    ->name('show.doctor.name');
+// search
+Route::get('/doctors/search/{searchTerm}', [SearchController::class, 'search']) ;    
 
-//get doctor's available time slots
-Route::get('/search/doctors/time_slots/{id}', [SearchController::class, 'getAvailTimeSlots'])
+
+    //get doctor's available time slots
+Route::get('/doctors/{id}/time_slots', [SearchController::class, 'getAvailTimeSlots'])
     ->name('show.doctor.time-slots');
-
 
     
 // patient profile 
@@ -96,3 +95,14 @@ Route::put('patient/profile/update', [PatientProfileController::class, 'update']
     ->name('patient.profile.update')
     ->middleware('auth:sanctum');
 
+
+    //  doctor profile
+    Route::middleware('auth:sanctum')->group(function () {
+        // doctor profile
+        Route::get('doctor/profile', [DoctorProfileController::class, 'show'])
+            ->name('doctor.profile.show');
+
+    // update doctor profile
+        Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
+            ->name('doctor.profile.update');
+    });

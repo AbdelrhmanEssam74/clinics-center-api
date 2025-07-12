@@ -17,6 +17,7 @@ class DoctorResource extends JsonResource
         return [
 
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'name' => $this->user->name,
             'email' => $this->user->email,
             'phone' => $this->user->phone,
@@ -26,7 +27,7 @@ class DoctorResource extends JsonResource
                 'id' => $this->specialty->id,
                 'name' => $this->specialty->name,
             ],
-            'experience_years' => $this->experience_years,
+            'years_of_experience' => $this->experience_years,
              'available_slots' => SlotResource::collection(
             $this->Slot()
                 ->where('status', 'available')
