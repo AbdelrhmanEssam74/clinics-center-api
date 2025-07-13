@@ -8,63 +8,76 @@ use App\Models\Doctor;
 use App\Models\Slot;
 use App\Models\Specialty;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
 
     public function index()
     {
-        $doctors = DoctorResource::collection(Doctor::paginate(3));
+        $doctors = DoctorResource::collection(Doctor::all());
         return response()->json(
             [
                 "doctors" => $doctors
-            ], 200);
-    }
-    // search should hanbled by one function to filter
-    //  retertiving data even by name or speciality
-    //  sorry but i will keep it as it is for now
-
-
-    //   by speciality
-    public function getBySpecialty($specialty)
-    {
-        $specialty = trim($specialty);
-        $specialty = Specialty::where('name', 'like', $specialty)->first();
-        if (!$specialty) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Specialty not found'
-                ], 404
-            );
-        }
-        $doctors = Doctor::with(['user', 'specialty'])->where('specialty_id', $specialty->id)
-            ->get();
-        if ($doctors->isEmpty()) {
-            return response()->json(['message' => 'No doctors found for this specialty'], 404);
-        }
-
-        return response()->json(DoctorResource::collection($doctors));
+            ],
+            200
+        );
     }
 
-    // by name
-    public function getByName($name)
+
+
+    public function getById($id)
     {
+        $doctor = Doctor::with(['user', 'specialty'])
+            ->where('id', $id)
+            ->first();
+
+        if (!$doctor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Doctor not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => new DoctorResource($doctor)
+        ], 200);
+    }
+
+
+    public function search($searchTerm)
+    {
+        $searchTerm = trim($searchTerm);
+
+
+        if (empty($searchTerm)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please enter a search term'
+            ], 400);
+        }
+
         $doctors = Doctor::with(['user', 'specialty'])
-            ->whereHas('user', function ($query) use ($name) {
-                $query->where('name', 'like', '%' . $name . '%');
+            ->whereHas('specialty', function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%');
+            })
+            ->orWhereHas('user', function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%');
             })
             ->get();
+
         if ($doctors->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'No doctors found with this name'
+                'message' => 'No doctors found matching your search'
             ], 404);
         }
+
         return response()->json([
             'success' => true,
             'data' => DoctorResource::collection($doctors)
-        ] , 200);
+        ], 200);
     }
 
 
@@ -73,7 +86,9 @@ class SearchController extends Controller
         $slots = Slot::where('doctor_id', $id)
             ->where('status', 'available')
             ->whereDate('date', '>=', Carbon::today())
-            ->get();
+            ->get()
+            ->groupBy('date');
+            
         if ($slots->isEmpty()) {
             return response()->json([
                 'success' => false,
@@ -85,5 +100,4 @@ class SearchController extends Controller
             'data' => $slots
         ], 200);
     }
-
 }
