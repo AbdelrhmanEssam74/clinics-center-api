@@ -28,39 +28,43 @@ class DoctorProfileController extends Controller
             'user' => $user,
         ]);
     }
+public function update(UpdateDoctorProfileRequest $request)
+{
+    $user = Auth::user();
 
-    public function update(UpdateDoctorProfileRequest $request)
-    {
-        $user = Auth::user();
-
-        if (!$user->doctor) {
-            return response()->json([
-                'message' => 'Unauthenticated. Please login and try again.',
-                'status' => 'error',
-            ], 401);
-        }
-        $user->update($request->only([
-            'name',
-            'email',
-            'phone',
-            'image',
-            'profile_description'
-        ]));
-
-        $user->doctor->update($request->only([
-            'specialty_id',
-            'experience_years'
-        ]));
-        
-        $doctor = Doctor::with(['user.role', 'specialty'])
-            ->where('user_id', $user->id)
-            ->first();
-
+    if (!$user->doctor) {
         return response()->json([
-            'message' => 'Profile updated successfully',
-            'status' => 'success',
-            'doctor' => $doctor,
-            'user' => $user,
-        ]);
+            'message' => 'Unauthenticated. Please login and try again.',
+            'status' => 'error',
+        ], 401);
     }
+
+    // Update user fields
+    $user->name = $request->input('name');
+    $user->email = $request->input('email');
+    $user->phone = $request->input('phone');
+
+    $user->profile_description = $request->input('profile_description');
+
+
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imagePath = $image->store('doctor_profiles', 'public');
+        $user->image = $imagePath;
+    }
+
+    $user->save();
+
+    $doctor = Doctor::with(['user.role', 'specialty'])
+        ->where('user_id', $user->id)
+        ->first();
+
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'status' => 'success',
+        'doctor' => $doctor,
+        'user' => $user,
+    ]);
+}
+
 }
