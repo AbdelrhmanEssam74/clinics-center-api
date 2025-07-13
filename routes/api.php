@@ -93,13 +93,13 @@ Route::get('/doctors/{id}/time_slots', [SearchController::class, 'getAvailTimeSl
 
 
 // patient profile
-Route::get('patient/profile', [PatientProfileController::class, 'show'])
+Route::get('/patient/profile', [PatientProfileController::class, 'show'])
     ->name('patient.profile.show')
     ->middleware('auth:sanctum');
 
 
 // update patient profile
-Route::put('patient/profile/update', [PatientProfileController::class, 'update'])
+Route::put('/patient/profile/update', [PatientProfileController::class, 'update'])
     ->name('patient.profile.update')
     ->middleware('auth:sanctum');
 

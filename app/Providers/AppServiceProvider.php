@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
        
-        Gate::define('manage-profile', function ($user, $patient) {
+        Gate::define('manage-profile', function (User $user, Patient $patient) {
         return $user->id === $patient->user_id; 
     });
 
