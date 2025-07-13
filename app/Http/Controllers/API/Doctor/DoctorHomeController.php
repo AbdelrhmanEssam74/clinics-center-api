@@ -8,24 +8,21 @@ use Illuminate\Http\Request;
 
 class DoctorHomeController extends Controller
 {
-    public function home($id)
+    public function home()
     {
         $user = auth()->user();
-
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-
         if ($user->role_id !== 2) {
             return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
         }
-
-        if ($user->id != $id) {
-            return response()->json(['message' => 'Forbidden: ID mismatch'], 403);
-        }
-
-        $doctor = Doctor::with(['specialty', 'appointments', 'user', 'user.role'])
-            ->find($id);
+        $user_id = $user->id;
+        $doctor = Doctor::select('user_id','specialty_id','experience_years')->with([
+        'specialty:id,name',
+         'user:id,role_id,name,email,phone,image,profile_description,password'
+         ])
+            ->find($user_id);
 
         if (!$doctor) {
             return response()->json(['message' => 'Doctor not found'], 404);

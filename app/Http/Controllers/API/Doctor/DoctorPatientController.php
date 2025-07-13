@@ -11,9 +11,9 @@ class DoctorPatientController extends Controller
     // get all patients which had appointments with the doctor
     public function index(Request $request)
     {
-        $doctorId = 1;
-        $patients = Appointment::where('doctor_id', $doctorId)
-            ->with(['patient.user:id,email,name'])
+        $doctor = auth()->user();
+        $patients = Appointment::select('doctor_id'  , 'patient_id')->where('doctor_id', $doctor->id)
+            ->with(['patient.user:id,email,name,image'])
             ->get();
 
         return response()->json([

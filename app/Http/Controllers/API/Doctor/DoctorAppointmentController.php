@@ -24,7 +24,10 @@ class DoctorAppointmentController extends Controller
 
         $doctorId = $user->id;
         $appointments = Appointment::where('doctor_id', $doctorId)
-            ->with(['patient'])
+            ->with([
+            'patient:id,user_id,medical_record_number,date_of_birth,gender,phone',
+            'patient.user:id,name,phone,image,created_at']
+            )
             ->get();
 
         return response()->json([
@@ -88,7 +91,7 @@ class DoctorAppointmentController extends Controller
         $doctorId = 1;
         // Validate the request
         $request->validate([
-            'status' => 'required|string|in:confirmed,cancelled,completed'
+            'status' => 'required|string|in:pending,confirmed,cancelled,completed'
         ]);
         // Find the appointment by ID and doctor ID
         $appointment = Appointment::where('doctor_id', $doctorId)

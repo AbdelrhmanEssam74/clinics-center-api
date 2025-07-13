@@ -35,7 +35,7 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 
 // Doctor API routes - Abdelrhman
-Route::get('doctor/profile/{id}', [DoctorHomeController::class, 'home'])
+Route::get('doctor/profile', [DoctorHomeController::class, 'home'])
     ->name('doctor.profile')->middleware('auth:sanctum');
 // Doctor appointments -> get all appointments for a doctor
 Route::get('doctor/appointments', [DoctorAppointmentController::class, 'index'])
@@ -51,19 +51,25 @@ Route::put('doctor/appointments/{id}/status', [DoctorAppointmentController::clas
     ->name('doctor.appointments.updateStatus');
 // Doctor Slots -> get all time slots for a doctor
 Route::get('doctor/time-slots', [DoctorTimeSlotsController::class, 'index'])
-    ->name('doctor.time-slots.index');
+    ->name('doctor.time-slots.index')->middleware('auth:sanctum');
 // Doctor Slots -> add a new time slot for a doctor
 Route::post('doctor/time-slots/store', [DoctorTimeSlotsController::class, 'store'])
-    ->name('doctor.time-slots.store');
+    ->name('doctor.time-slots.store')->middleware('auth:sanctum');
+    // Doctor Slots -> show slot for a doctor
+Route::get('doctor/time-slots/show/{id}', [DoctorTimeSlotsController::class, 'show'])
+    ->name('doctor.time-slots.show')->middleware('auth:sanctum');
+    // Doctor Slots -> update  time slot for a doctor
+Route::put('doctor/time-slots/update/{id}', [DoctorTimeSlotsController::class, 'update'])
+    ->name('doctor.time-slots.update')->middleware('auth:sanctum');
 // Doctor Slots -> delete a time slot for a doctor
-Route::delete('doctor/time-slots/{id}', [DoctorTimeSlotsController::class, 'destroy'])
-    ->name('doctor.time-slots.destroy');
+Route::delete('doctor/time-slots/delete/{id}', [DoctorTimeSlotsController::class, 'destroy'])
+    ->name('doctor.time-slots.destroy')->middleware('auth:sanctum');
 // Doctor Patients -> get all patients who had appointments with the doctor
 Route::get('doctor/patients', [DoctorPatientController::class, 'index'])
-    ->name('doctor.patients.index');
+    ->name('doctor.patients.index')->middleware('auth:sanctum');
 // Doctor Patients -> get specific patient by id
 Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
-    ->name('doctor.patients.show');
+    ->name('doctor.patients.show')->middleware('auth:sanctum');
 
 
 // search task - Mariam
@@ -84,13 +90,13 @@ Route::get('/search/doctors/time_slots/{id}', [SearchController::class, 'getAvai
     ->name('show.doctor.time-slots');
 
 
-    
-// patient profile 
+
+// patient profile
 Route::get('patient/profile', [PatientProfileController::class, 'show'])
     ->name('patient.profile.show')
-    ->middleware('auth:sanctum');  
-    
-    
+    ->middleware('auth:sanctum');
+
+
 // update patient profile
 Route::put('patient/profile/update', [PatientProfileController::class, 'update'])
     ->name('patient.profile.update')
