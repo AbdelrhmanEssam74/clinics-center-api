@@ -25,12 +25,12 @@ class UpdatePatientProfileRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'min:3', 'max:255'],
-            'email' => [ 'required','string', 'email', Rule::unique('users', 'email')],
+            'email' => [ 'required','string', 'email'],
             'date_of_birth' => ['string', 'date'],
             'address' => ['string', 'max:255'],
             'gender' => ['required', Rule::in(['Male', 'Female'])],
             'phone' => ['string', 'max:11', 'nullable'],
-            'address' => ['string', 'nullable', 'max:255'],
+             'image' => ['nullable','image','mimes:jpeg,png,jpg,gif','max:2048'],
         ];
     }
 

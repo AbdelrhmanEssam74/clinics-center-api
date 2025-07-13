@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+
 class PatientProfileController extends Controller
 {
     /**
@@ -16,18 +18,18 @@ class PatientProfileController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    
+
     public function show()
     {
         $user = Auth::user();
         if (!$user) {
-        return response()->json([
-            'message' => 'Unauthenticated. Please login and try again.',
-            'status' => 'error',
-        ], 401);
-    }
+            return response()->json([
+                'message' => 'Unauthenticated. Please login and try again.',
+                'status' => 'error',
+            ], 401);
+        }
         $patient = $user->patient;
-    
+
         // check Authorization
         if (! Gate::allows('manage-profile', $patient)) {
             abort(403, 'error,Unauthorized');
@@ -37,8 +39,8 @@ class PatientProfileController extends Controller
             'User' => $user,
         ], 200);
     }
-    
- // update patient profile
+
+    // update patient profile
 
     public function update(UpdatePatientProfileRequest $request)
     {
@@ -51,7 +53,7 @@ class PatientProfileController extends Controller
         }
 
         $patient = $user->patient;
- if (!$patient) {
+        if (!$patient) {
             return response()->json([
                 'message' => 'Patient profile not found for this user.',
                 'status' => 'error',
@@ -61,6 +63,13 @@ class PatientProfileController extends Controller
         // check Authorization
         if (! Gate::allows('manage-profile', $patient)) {
             abort(403, 'error,Unauthorized');
+        }           
+        $imagePath = $user->image;
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::exists(str_replace('storage/', 'public/', $user->image))) {
+                Storage::delete(str_replace('storage/', 'public/', $user->image));
+            }    
+            $imagePath = 'storage/' . $request->file('image')->store('profile_images', 'public');
         }
 
 
@@ -73,10 +82,10 @@ class PatientProfileController extends Controller
 
         ]);
         $user->update([
-        'name' => $request->name,
-        'email' => $request->email,
-        'phone' => $request->phone,
-        'image' => $request->image ?? $user->image,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'image' => $imagePath,
         ]);
 
         return response()->json([
@@ -84,5 +93,5 @@ class PatientProfileController extends Controller
             'Patient Profile' => $patient,
             'User' => $user,
         ], 200);
-}
+    }
 }
