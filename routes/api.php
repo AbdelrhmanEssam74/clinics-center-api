@@ -11,15 +11,21 @@ use App\Http\Controllers\API\Search\SearchController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\users\UserController;
 use Illuminate\Http\Request;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
 // Patient API routes - Ahmed sayed
-Route::apiResource('appointments/patient', PatientAppointmentController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('appointments/patient', PatientAppointmentController::class);
+    Route::get('/appointments/mine', [PatientAppointmentController::class, 'mine']);
 
+});
 
 // add and edit and delete and show user to admin  =>ahmed abdelhalim
 Route::apiResource('users', UserController::class);
@@ -102,6 +108,19 @@ Route::get('patient/profile', [PatientProfileController::class, 'show'])
 Route::put('patient/profile/update', [PatientProfileController::class, 'update'])
     ->name('patient.profile.update')
     ->middleware('auth:sanctum');
+
+// get patient id  => Ahmed  abdelhalim
+Route::get('/patient/id', function () {
+$user = Auth::user();
+
+    $patient = Patient::where('user_id', $user->id)->first();
+
+    if (!$patient) {
+        return response()->json(['error' => 'Patient not found'], 404);
+    }
+
+    return response()->json(['patient_id' => $patient->id]);
+})->middleware('auth:sanctum');
 
 
     //  doctor profile

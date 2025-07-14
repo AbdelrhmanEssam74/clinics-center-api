@@ -7,6 +7,8 @@ use App\Http\Requests\CreateAppointmentRequest;
 use App\Http\Requests\UpdateAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PatientAppointmentController extends Controller
 {
@@ -37,6 +39,21 @@ class PatientAppointmentController extends Controller
     /**
      * Display the specified resource.
      */
+    // Todo add check for the appointment authenticated patient => Ahmed abdelhalim
+    public function mine(Request $request)
+{
+    $patient = $request->user()->patient;
+
+    if (!$patient) {
+        return response()->json(['message' => 'Not a patient'], 403);
+    }
+
+    $appointments = Appointment::with('doctor.user', 'patient')
+        ->where('patient_id', $patient->id)
+        ->get();
+
+    return AppointmentResource::collection($appointments);
+}
     public function show(string $id)
     {
         // Todo add check for the appointment belongs to the authenticated patient
