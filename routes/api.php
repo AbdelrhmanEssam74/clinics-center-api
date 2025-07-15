@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use App\Models\Patient;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PayPalController;
+
 
 
 Route::get('/user', function (Request $request) {
@@ -79,7 +81,7 @@ Route::get('doctor/patients', [DoctorPatientController::class, 'index'])
 Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
     ->name('doctor.patients.show')->middleware('auth:sanctum');
 
-    
+
 // search task - Mariam
 // // Get all doctors
 Route::get('/doctors', [SearchController::class, 'index'])
@@ -90,7 +92,7 @@ Route::get('/doctors', [SearchController::class, 'index'])
     ->name('show.doctor.id');
 
 // search
-Route::get('/doctors/search/{searchTerm}', [SearchController::class, 'search']) ;    
+Route::get('/doctors/search/{searchTerm}', [SearchController::class, 'search']) ;
 
 
     //get doctor's available time slots
@@ -133,3 +135,8 @@ $user = Auth::user();
         Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
             ->name('doctor.profile.update');
     });
+
+    // PayPal routes
+Route::post('/paypal/create', [PayPalController::class, 'createTransaction']);
+Route::get('/paypal/success', [PayPalController::class, 'captureTransaction'])->name('paypal.success');
+Route::get('/paypal/cancel', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
