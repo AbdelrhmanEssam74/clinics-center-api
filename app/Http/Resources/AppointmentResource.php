@@ -33,6 +33,8 @@ class AppointmentResource extends JsonResource
                 'end_time' => $this->end_time,
                 'status' => $this->status,
                 'notes' => $this->notes,
+                'payment_method' => $this->payment_method ?? null,
+                'payment_status' => $this->payment_status ?? null,
             ],
 
             'doctor' => $this->doctor ? [
@@ -40,6 +42,7 @@ class AppointmentResource extends JsonResource
     'name' => $this->doctor->user->name ?? null,
     'specialization' => $this->doctor->specialty->name ?? null,
     'phone' => $this->doctor->user->phone ?? null,
+    'appointment_fee' => $this->doctor->appointment_fee ?? null, // Include appointment fee
 ] : null,
         ];
     }

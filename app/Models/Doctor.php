@@ -11,6 +11,7 @@ class Doctor extends Model
         'specialty_id',
         'user_id',
         'experience_years',
+        'appointment_fee', // Added appointment_fee field
     ];
 
     public function appointments()

@@ -32,6 +32,7 @@ class UpdateDoctorProfileRequest extends FormRequest
             'profile_description' => ['string','nullable'],
             'specialty_id' => ['required','exists:specialties,id'],
             'experience_years' =>['integer', 'min:0'],
+            'appointment_fee' => ['required', 'numeric', 'min:0'], // Validation for appointment fee => ahmed abdelhalim
         ];
     }
      public function messages(): array
@@ -44,6 +45,10 @@ class UpdateDoctorProfileRequest extends FormRequest
                 'email.unique' => 'This email is already exists, it must be unique.',
                 'phone.max' => 'The phone number must be 11 digits',
                 'gender.in' => 'Gender must be either Male or Female.',
+                'appointment_fee.required' => 'The appointment fee is required.', // Validation message for appointment fee => ahmed abdelhalim
+                'appointment_fee.numeric' => 'The appointment fee must be a number.',
+                'appointment_fee.min' => 'The appointment fee must be at least 0.',
+         
             ];
     }
 }

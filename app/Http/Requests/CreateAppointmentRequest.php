@@ -29,6 +29,7 @@ class CreateAppointmentRequest extends FormRequest
             'end_time' => 'required|date_format:H:i|after:start_time',
             'status' => 'required|in:pending,confirmed,cancelled',
             'notes' => 'nullable|string|max:500',
+            'appointment_fee' => 'required|numeric|min:0', // Added appointment fee validation => ahmed abdelhalim
         ];
     }
 }
