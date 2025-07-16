@@ -29,6 +29,9 @@ class PatientProfileController extends Controller
             ], 401);
         }
         $patient = $user->patient;
+        if ($user->image) {
+            $user->image = asset('storage/users/' . basename($user->image));
+        }
 
         // check Authorization
         if (! Gate::allows('manage-profile', $patient)) {
@@ -66,10 +69,16 @@ class PatientProfileController extends Controller
         }           
         $imagePath = $user->image;
         if ($request->hasFile('image')) {
-            if ($user->image && Storage::exists(str_replace('storage/', 'public/', $user->image))) {
-                Storage::delete(str_replace('storage/', 'public/', $user->image));
-            }    
-            $imagePath = 'storage/' . $request->file('image')->store('profile_images', 'public');
+            if ($user->image) {
+                $oldImage = str_replace('storage/users/', '', $user->image);
+                Storage::disk('public')->delete('users/' . $oldImage);
+            }
+        }
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('users', $filename, 'public');
+            $user->image == 'storage/' . $filename;
         }
 
 

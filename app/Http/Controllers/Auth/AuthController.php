@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreUserRequest;
-
+use App\Models\Patient;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -23,12 +23,28 @@ class AuthController extends Controller
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('users', $filename, 'public');
-            $data['image'] = $path;
+            $data['image'] = 'storage/'. $path;            
         }
 
         $data['password'] = Hash::make($data['password']);
+        $data['role_id'] = $patient['role_id'] ?? 5;
+        $data['profile_description'] = $data['profile_description'] ?? 'Patient'; 
 
         $user = User::create($data);
+        // 
+        $patient = new Patient();
+        $patient->user_id = $user->id;
+        $patient->medical_record_number = 'MRN' . time(); 
+        $patient->gender = $data['gender'] ; 
+        $patient->address = $data['address'] ; 
+        $patient->phone = $data['phone'] ; 
+        $patient->date_of_birth = $data['date_of_birth'] ?? '2000-01-01'; 
+        
+        $patient->save();
+    if ($user->image) {
+        $user->image = asset($user->image);
+    }
+        // 
 
         $user = new UserResource($user);
         $token = $user->createToken('auth_token')->plainTextToken;

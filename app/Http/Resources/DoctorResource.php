@@ -21,7 +21,7 @@ class DoctorResource extends JsonResource
             'name' => $this->user->name,
             'email' => $this->user->email,
             'phone' => $this->user->phone,
-            'image' => $this->user->image ,
+            'image' =>asset( $this->user->image) ,
             'appointment_fee' => $this->appointment_fee, // Include appointment fee
             'profile_description' => $this->user->profile_description,
             'specialty' => [

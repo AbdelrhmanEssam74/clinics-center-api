@@ -22,10 +22,10 @@ class UpdatePatientProfileRequest extends FormRequest
      */
     public function rules(): array
     {
-
+            $userId = $this->user()->id;
         return [
             'name' => ['required', 'string', 'min:3', 'max:255'],
-            'email' => [ 'required','string', 'email'],
+            'email' => [ 'required','string', 'email', Rule::unique('users')->ignore($userId)],
             'date_of_birth' => ['string', 'date'],
             'address' => ['string', 'max:255'],
             'gender' => ['required', Rule::in(['Male', 'Female'])],
