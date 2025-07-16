@@ -57,8 +57,10 @@ Route::get('doctor/appointments/upcoming', [DoctorAppointmentController::class, 
 Route::get('doctor/appointments/{id}', [DoctorAppointmentController::class, 'show'])
     ->name('doctor.appointments.show');
 // Doctor appointments -> update appointment status
-Route::put('doctor/appointments/{id}/status', [DoctorAppointmentController::class, 'updateStatus'])
-    ->name('doctor.appointments.updateStatus');
+Route::put('doctor/appointments/{id}/status', [DoctorAppointmentController::class, 'updateStatus'])->middleware('auth:sanctum');
+// Doctor appointments -> get payment status
+Route::get('doctor/appointments/{id}/payment/status', [DoctorAppointmentController::class, 'getAppointmentPayment'])
+    ->name('doctor.appointments.updateStatus')->middleware('auth:sanctum');
 // Doctor Slots -> get all time slots for a doctor
 Route::get('doctor/time-slots', [DoctorTimeSlotsController::class, 'index'])
     ->name('doctor.time-slots.index')->middleware('auth:sanctum');
@@ -137,6 +139,6 @@ $user = Auth::user();
     });
 
     // PayPal routes
-Route::post('/paypal/create', [PayPalController::class, 'createTransaction']);
+Route::post('/paypal/create', [PayPalController::class, 'createTransaction'])->middleware('auth:sanctum');
 Route::get('/paypal/success', [PayPalController::class, 'captureTransaction'])->name('paypal.success');
 Route::get('/paypal/cancel', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
