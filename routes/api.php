@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Doctor\DoctorHomeController;
 use App\Http\Controllers\API\Doctor\DoctorPatientController;
 use App\Http\Controllers\API\Doctor\DoctorProfileController;
 use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
+use App\Http\Controllers\API\patient\MedicalReportController;
 use App\Http\Controllers\API\patient\PatientAppointmentController;
 use App\Http\Controllers\API\patient\PatientProfileController;
 use App\Http\Controllers\API\Search\SearchController;
@@ -112,6 +113,17 @@ Route::get('/patient/profile', [PatientProfileController::class, 'show'])
 Route::put('/patient/profile/update', [PatientProfileController::class, 'update'])
     ->name('patient.profile.update')
     ->middleware('auth:sanctum');
+// records
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/patient/medical_reports', [MedicalReportController::class, 'index']);
+    Route::post('/patient/medical_reports', [MedicalReportController::class, 'store']);
+    Route::delete('/patient/medical_reports/{report}', [MedicalReportController::class, 'destroy']);
+    // doctor access report for patients
+    Route::get('doctor/patients/{patient}/reports', [MedicalReportController::class, 'getPatientReports']);
+    
+    Route::get('doctor/reports/{report}', [MedicalReportController::class, 'getReport']);
+});
+// 
 
 // get patient id  => Ahmed  abdelhalim
 Route::get('/patient/id', function () {

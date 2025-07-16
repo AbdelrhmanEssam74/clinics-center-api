@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
@@ -30,6 +31,9 @@ class StoreUserRequest extends FormRequest
         'image' => 'required',
         'profile_description' => 'nullable|string',
         'role_id' => 'required|integer|exists:roles,id',
+        'address' => 'string', 'max:255',
+        'gender' => 'nullable|string|in:Male,Female',
+        'date_of_birth' => 'nullable|date',
         ];
     }
     
