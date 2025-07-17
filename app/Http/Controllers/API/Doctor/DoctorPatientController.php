@@ -9,12 +9,25 @@ use Illuminate\Http\Request;
 class DoctorPatientController extends Controller
 {
     // get all patients which had appointments with the doctor
-    public function index(Request $request)
+  public function index(Request $request)
     {
         $doctor = auth()->user();
-        $patients = Appointment::select('doctor_id'  , 'patient_id')->where('doctor_id', $doctor->id)
+
+        $patients = Appointment::select('doctor_id', 'patient_id')
+            ->where('doctor_id', $doctor->id)
             ->with(['patient.user:id,email,name,image'])
-            ->get();
+            ->get()
+            ->map(function ($appointment) {
+                $user = $appointment->patient->user;
+
+                if ($user && $user->image) {
+                    $user->image =asset('storage/users/' . basename($user->image));
+                } else {
+                    $user->image = null; 
+                }
+
+                return $appointment;
+            });
 
         return response()->json([
             'message' => 'List of patients retrieved successfully',
