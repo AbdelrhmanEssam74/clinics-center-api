@@ -68,10 +68,10 @@ Route::get('doctor/time-slots', [DoctorTimeSlotsController::class, 'index'])
 // Doctor Slots -> add a new time slot for a doctor
 Route::post('doctor/time-slots/store', [DoctorTimeSlotsController::class, 'store'])
     ->name('doctor.time-slots.store')->middleware('auth:sanctum');
-    // Doctor Slots -> show slot for a doctor
+// Doctor Slots -> show slot for a doctor
 Route::get('doctor/time-slots/show/{id}', [DoctorTimeSlotsController::class, 'show'])
     ->name('doctor.time-slots.show')->middleware('auth:sanctum');
-    // Doctor Slots -> update  time slot for a doctor
+// Doctor Slots -> update  time slot for a doctor
 Route::put('doctor/time-slots/update/{id}', [DoctorTimeSlotsController::class, 'update'])
     ->name('doctor.time-slots.update')->middleware('auth:sanctum');
 // Doctor Slots -> delete a time slot for a doctor
@@ -90,15 +90,15 @@ Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
 Route::get('/doctors', [SearchController::class, 'index'])
     ->name('show.all.doctors');
 
-    // get specific doctor by id
-    Route::get('/doctors/{id}', [SearchController::class, 'getById'])
+// get specific doctor by id
+Route::get('/doctors/{id}', [SearchController::class, 'getById'])
     ->name('show.doctor.id');
 
 // search
-Route::get('/doctors/search/{searchTerm}', [SearchController::class, 'search']) ;
+Route::get('/doctors/search/{searchTerm}', [SearchController::class, 'search']);
 
 
-    //get doctor's available time slots
+//get doctor's available time slots
 Route::get('/doctors/{id}/time_slots', [SearchController::class, 'getAvailTimeSlots'])
     ->name('show.doctor.time-slots');
 
@@ -120,14 +120,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/patient/medical_reports/{report}', [MedicalReportController::class, 'destroy']);
     // doctor access report for patients
     Route::get('doctor/patients/{patient}/reports', [MedicalReportController::class, 'getPatientReports']);
-    
+
     Route::get('doctor/reports/{report}', [MedicalReportController::class, 'getReport']);
 });
-// 
+//
 
 // get patient id  => Ahmed  abdelhalim
 Route::get('/patient/id', function () {
-$user = Auth::user();
+    $user = Auth::user();
 
     $patient = Patient::where('user_id', $user->id)->first();
 
@@ -139,18 +139,21 @@ $user = Auth::user();
 })->middleware('auth:sanctum');
 
 
-    //  doctor profile
-    Route::middleware('auth:sanctum')->group(function () {
-        // doctor profile
-        Route::get('doctor/profile', [DoctorProfileController::class, 'show'])
-            ->name('doctor.profile.show');
+//  doctor profile
+Route::middleware('auth:sanctum')->group(function () {
+    // doctor profile
+    Route::get('doctor/profile', [DoctorProfileController::class, 'show'])
+        ->name('doctor.profile.show');
 
     // update doctor profile
-        Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
-            ->name('doctor.profile.update');
-    });
+    Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
+        ->name('doctor.profile.update');
+    // update doctor image
+    Route::post('doctor/image/update', [DoctorProfileController::class, 'updateImage'])->name('doctor.image.update');
+});
 
-    // PayPal routes
+
+// PayPal routes
 Route::post('/paypal/create', [PayPalController::class, 'createTransaction'])->middleware('auth:sanctum');
 Route::get('/paypal/success', [PayPalController::class, 'captureTransaction'])->name('paypal.success');
 Route::get('/paypal/cancel', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
