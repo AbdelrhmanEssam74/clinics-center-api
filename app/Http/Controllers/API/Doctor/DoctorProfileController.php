@@ -8,6 +8,8 @@ use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DoctorProfileController extends Controller
 {
@@ -28,43 +30,57 @@ class DoctorProfileController extends Controller
             'user' => $user,
         ]);
     }
-public function update(UpdateDoctorProfileRequest $request)
-{
-    $user = Auth::user();
+    public function update(UpdateDoctorProfileRequest $request)
+    {
+        $user = Auth::user();
 
-    if (!$user->doctor) {
+        if (!$user->doctor) {
+            return response()->json([
+                'message' => 'Unauthenticated. Please login and try again.',
+                'status' => 'error',
+            ], 401);
+        }
+        // Update user fields
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->phone = $request->input('phone');
+        $user->profile_description = $request->input('profile_description');
+        $user->save();
+        $doctor = Doctor::with(['user.role', 'specialty'])
+            ->where('user_id', $user->id)
+            ->first();
         return response()->json([
-            'message' => 'Unauthenticated. Please login and try again.',
-            'status' => 'error',
-        ], 401);
+            'message' => 'Profile updated successfully',
+            'status' => 'success',
+            'doctor' => $doctor,
+            'user' => $user,
+        ]);
     }
-
-    // Update user fields
-    $user->name = $request->input('name');
-    $user->email = $request->input('email');
-    $user->phone = $request->input('phone');
-
-    $user->profile_description = $request->input('profile_description');
-
-
+public function updateImage(Request $request)
+{
     if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imagePath = $image->store('doctor_profiles', 'public');
-        $user->image = $imagePath;
+        $file = $request->file('image');
+
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+
+        $file->move(public_path('uploads'), $filename);
+
+        $url = asset('uploads/' . $filename);
+
+        $user = Auth::user();
+        $user->image = $url;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'path' => $url
+        ]);
     }
-
-    $user->save();
-
-    $doctor = Doctor::with(['user.role', 'specialty'])
-        ->where('user_id', $user->id)
-        ->first();
 
     return response()->json([
-        'message' => 'Profile updated successfully',
-        'status' => 'success',
-        'doctor' => $doctor,
-        'user' => $user,
-    ]);
+        'success' => false,
+        'message' => 'No image uploaded',
+    ], 422);
 }
 
 }
