@@ -125,7 +125,8 @@ class UsersTableSeeder extends Seeder
                 'email' => 'Patricia@hospital.com',
                 'password' => Hash::make('password'),
                 'phone' => '966502345679',
-                'image' => 'storage/doctors/doctor10.webp',
+                'image' => '
+                ',
                 'profile_description' => 'Experienced cardiologist with over 10 years in patient care.',
                 'role_id' => 2,
                 'created_at' => '2023-01-02 09:00:00',
