@@ -174,10 +174,12 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('slots', SlotController::class);
     Route::apiResource('users', UserController::class);
     Route::get('dashboard-data', [AdminController::class, 'dashboardData']);
-  
+  });
+
 // Contact Us routes => Ahmed abdelhalim
  
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index']);
     Route::post('/contacts', [ContactController::class, 'store']);
 });
+?>
