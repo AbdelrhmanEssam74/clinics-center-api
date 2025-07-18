@@ -31,6 +31,7 @@ class AppointmentController extends Controller
     {
         return Appointment::with(['doctor', 'patient'])->findOrFail($id);
     }
+    
 
     public function update(Request $request, $id)
     {
