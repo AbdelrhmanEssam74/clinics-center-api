@@ -168,16 +168,16 @@ Route::get('/paypal/cancel', [PayPalController::class, 'cancelTransaction'])->na
 
 //admin routes
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::apiResource('patients', PatientController::class);
-    Route::apiResource('doctors', DoctorController::class);
-    Route::apiResource('appointments', AppointmentController::class);
-    Route::apiResource('slots', SlotController::class);
-    Route::apiResource('users', UserController::class);
-    Route::get('dashboard-data', [AdminController::class, 'dashboardData']);
+    Route::apiResource('admin/patients', PatientController::class);
+    Route::apiResource('admin/doctors', DoctorController::class);
+    Route::apiResource('admin/appointments', AppointmentController::class);
+    Route::apiResource('admin/slots', SlotController::class);
+    Route::apiResource('admin/users', UserController::class);
+    Route::get('admin/dashboard-data', [AdminController::class, 'dashboardData']);
   });
 
 // Contact Us routes => Ahmed abdelhalim
- 
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index']);
     Route::post('/contacts', [ContactController::class, 'store']);

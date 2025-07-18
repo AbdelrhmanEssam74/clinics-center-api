@@ -7,10 +7,17 @@ use Illuminate\Http\Request;
 use App\Models\Appointment;
 class AppointmentController extends Controller
 {
-    public function index()
-    {
-        return Appointment::with(['doctor', 'patient'])->get();
+   public function index(Request $request)
+{
+    $query = Appointment::with(['doctor', 'patient']);
+
+    if ($request->has('status')) {
+        $query->where('status', $request->status);
     }
+
+    return $query->get();
+}
+
 
     public function store(Request $request)
     {
