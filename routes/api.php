@@ -171,6 +171,8 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('admin/patients', PatientController::class);
     Route::apiResource('admin/doctors', DoctorController::class);
     Route::apiResource('admin/appointments', AppointmentController::class);
+    Route::get('/doctors/dropdown', [DoctorController::class, 'dropdown']);
+
     Route::apiResource('admin/slots', SlotController::class);
     Route::apiResource('admin/users', UserController::class);
     Route::get('admin/dashboard-data', [AdminController::class, 'dashboardData']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Slot;
 use Illuminate\Http\Request;
+use App\Models\Doctor;
 
 class SlotController extends Controller
 {
@@ -12,7 +13,10 @@ class SlotController extends Controller
     {
         return Slot::with('doctor')->get();
     }
-
+    public function dropdown()
+    {
+        return Doctor::select('id', 'name')->get();
+    }
     public function store(Request $request)
     {
         $data = $request->validate([
