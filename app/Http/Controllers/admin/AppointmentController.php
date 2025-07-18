@@ -5,19 +5,46 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
+
 class AppointmentController extends Controller
 {
-   public function index(Request $request)
-{
-    $query = Appointment::with(['doctor', 'patient']);
+    public function index(Request $request)
+    {
+        $query = Appointment::with(['doctor.user', 'patient.user']);
 
-    if ($request->has('status')) {
-        $query->where('status', $request->status);
+        // فلتر الحالة
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        // فلتر بالدكتور عن طريق اسم المستخدم
+        if ($request->has('doctor_name') && $request->doctor_name != '') {
+            $doctorName = $request->doctor_name;
+            $query->whereHas('doctor.user', function($q) use ($doctorName) {
+                $q->where('name', 'LIKE', "%$doctorName%");
+            });
+        }
+
+        // فلتر بالمريض عن طريق اسم المستخدم
+        if ($request->has('patient_name') && $request->patient_name != '') {
+            $patientName = $request->patient_name;
+            $query->whereHas('patient.user', function($q) use ($patientName) {
+                $q->where('name', 'LIKE', "%$patientName%");
+            });
+        }
+
+        // فلتر حسب doctor_id
+        if ($request->has('doctor_id') && $request->doctor_id != '') {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
+        // فلتر حسب patient_id
+        if ($request->has('patient_id') && $request->patient_id != '') {
+            $query->where('patient_id', $request->patient_id);
+        }
+
+        return $query->get();
     }
-
-    return $query->get();
-}
-
 
     public function store(Request $request)
     {
@@ -28,7 +55,7 @@ class AppointmentController extends Controller
             'start_time' => 'required',
             'end_time' => 'required',
             'status' => 'in:pending,confirmed,cancelled',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
         ]);
 
         return Appointment::create($data);
@@ -36,9 +63,8 @@ class AppointmentController extends Controller
 
     public function show($id)
     {
-        return Appointment::with(['doctor', 'patient'])->findOrFail($id);
+        return Appointment::with(['doctor.user', 'patient.user'])->findOrFail($id);
     }
-    
 
     public function update(Request $request, $id)
     {
@@ -51,7 +77,7 @@ class AppointmentController extends Controller
             'start_time' => 'sometimes',
             'end_time' => 'sometimes',
             'status' => 'in:pending,confirmed,cancelled',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
         ]);
 
         $appointment->update($data);
