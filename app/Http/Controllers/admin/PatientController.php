@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class PatientController extends Controller
 { public function index()
     {
-        return Patient::all();
+    return Patient::with('user')->get();
     }
 
  public function store(Request $request)
@@ -18,7 +18,7 @@ class PatientController extends Controller
         'user_id' => 'required|exists:users,id',
         'name' => 'required|string',
         'gender' => 'required|in:male,female',
-'date_of_birth' => 'required|date',
+        'date_of_birth' => 'required|date',
         'phone' => 'required|string',
         'address' => 'nullable|string',
         'medical_record_number' => 'required|unique:patients'
@@ -30,7 +30,7 @@ class PatientController extends Controller
 
     public function show($id)
     {
-        return Patient::findOrFail($id);
+       return Patient::with('user')->findOrFail($id);
     }
 
     public function update(Request $request, $id)

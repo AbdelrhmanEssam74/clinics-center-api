@@ -9,7 +9,7 @@ class DoctorController extends Controller
 {
     public function index()
     {
-        return Doctor::with('Slot')->get();
+    return Doctor::with(['Slot', 'user'])->get();
     }
 
     public function store(Request $request)
@@ -26,7 +26,7 @@ class DoctorController extends Controller
 
     public function show($id)
     {
-        return Doctor::with('Slot')->findOrFail($id);
+    return Doctor::with(['Slot', 'user'])->findOrFail($id);
     }
 
     public function update(Request $request, $id)
