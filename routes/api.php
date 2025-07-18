@@ -11,6 +11,12 @@ use App\Http\Controllers\API\patient\PatientProfileController;
 use App\Http\Controllers\API\Search\SearchController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\users\UserController;
+use App\Http\Controllers\admin\AppointmentController;
+use App\Http\Controllers\admin\DoctorController;
+use App\Http\Controllers\admin\PatientController;
+use App\Http\Controllers\admin\SlotController;
+use App\Http\Controllers\admin\AdminController;
+
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use Illuminate\Support\Facades\Route;
@@ -159,7 +165,18 @@ Route::post('/paypal/create', [PayPalController::class, 'createTransaction'])->m
 Route::get('/paypal/success', [PayPalController::class, 'captureTransaction'])->name('paypal.success');
 Route::get('/paypal/cancel', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
 
+
+//admin routes
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::apiResource('patients', PatientController::class);
+    Route::apiResource('doctors', DoctorController::class);
+    Route::apiResource('appointments', AppointmentController::class);
+    Route::apiResource('slots', SlotController::class);
+    Route::apiResource('users', UserController::class);
+    Route::get('dashboard-data', [AdminController::class, 'dashboardData']);
+  
 // Contact Us routes => Ahmed abdelhalim
+ 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index']);
     Route::post('/contacts', [ContactController::class, 'store']);
