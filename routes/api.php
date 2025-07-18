@@ -16,6 +16,7 @@ use App\Models\Patient;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\ContactController;
 
 
 
@@ -157,3 +158,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/paypal/create', [PayPalController::class, 'createTransaction'])->middleware('auth:sanctum');
 Route::get('/paypal/success', [PayPalController::class, 'captureTransaction'])->name('paypal.success');
 Route::get('/paypal/cancel', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
+
+// Contact Us routes => Ahmed abdelhalim
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/contacts', [ContactController::class, 'index']);
+    Route::post('/contacts', [ContactController::class, 'store']);
+});
