@@ -186,6 +186,7 @@ Route::get('/paypal/cancel', [PayPalController::class, 'cancelTransaction'])->na
     Route::apiResource('admin/doctors', DoctorController::class);
 
     Route::apiResource('admin/appointments', AppointmentController::class);
+    Route::patch('admin/appointments/{id}/status', [AppointmentController::class, 'updateStatusByAdmin']);
 
     Route::apiResource('admin/slots', SlotController::class);
     Route::apiResource('admin/users', UserController::class);
