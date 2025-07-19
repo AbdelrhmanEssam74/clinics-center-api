@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Doctor\DoctorTimeSlotsController;
 use App\Http\Controllers\API\patient\MedicalReportController;
 use App\Http\Controllers\API\patient\PatientAppointmentController;
 use App\Http\Controllers\API\patient\PatientProfileController;
+use App\Http\Controllers\API\Rating\Reviews_Ratings_Doctors;
 use App\Http\Controllers\API\Search\SearchController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\users\UserController;
@@ -92,6 +93,16 @@ Route::get('doctor/patients/{id}', [DoctorPatientController::class, 'show'])
     ->name('doctor.patients.show')->middleware('auth:sanctum');
 
 
+
+// Reviews & Ratings - Abdelrhman
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('review-rating/add', [Reviews_Ratings_Doctors::class, 'create'])->name('post.review');
+    Route::put('review-rating/update/{review_id}', [Reviews_Ratings_Doctors::class, 'update'])->name('update.review');
+    Route::delete('review-rating/delete/{review_id}', [Reviews_Ratings_Doctors::class, 'delete'])->name('delete.review');
+    Route::get('review-rating/show/{review_id}', [Reviews_Ratings_Doctors::class, 'show'])->name('show.review');
+    Route::get('review-rating/doctorReviews/{review_id}', [Reviews_Ratings_Doctors::class, 'doctorReviews'])->name('doctorReviews.review');
+    Route::get('review-rating/myReviews', [Reviews_Ratings_Doctors::class, 'myReviews'])->name('myReviews.review');
+});
 // search task - Mariam
 // // Get all doctors
 Route::get('/doctors', [SearchController::class, 'index'])
