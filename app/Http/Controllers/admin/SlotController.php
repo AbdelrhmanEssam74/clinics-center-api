@@ -13,17 +13,21 @@ class SlotController extends Controller
     {
         return Slot::with('doctor')->get();
     }
-  public function dropdown()
-{
-    return Doctor::with('user:id,name')
-        ->get(['id', 'user_id'])
-        ->map(function ($doctor) {
-            return [
-                'id' => $doctor->id,
-                'name' => $doctor->user->name,
-            ];
-        });
-}
+
+    public function dropdown()
+    {
+        $doctors = Doctor::with('user:id,name')->get(['id', 'user_id']);
+
+        return response()->json(
+            $doctors->map(function ($doctor) {
+                return [
+                    'id' => $doctor->id,
+                    'name' => $doctor->user->name,
+                ];
+            })
+        );
+    }
+
 
     public function store(Request $request)
     {
