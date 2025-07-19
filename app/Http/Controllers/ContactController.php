@@ -31,4 +31,16 @@ class ContactController extends Controller
         Contact::create($request->all());
         return response()->json(["massage" => 'Your message has been sent successfully!'], 201);
     }
+    public function destroy($id)
+{
+    $contact = Contact::find($id);
+
+    if (!$contact) {
+        return response()->json(['message' => 'Contact not found'], 404);
+    }
+
+    $contact->delete();
+
+    return response()->json(['message' => 'Contact deleted successfully']);
+}
 }
