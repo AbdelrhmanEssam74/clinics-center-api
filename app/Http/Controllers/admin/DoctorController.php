@@ -21,17 +21,7 @@ class DoctorController extends Controller
         return $query->get();
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'specialization' => 'required|string',
-            'phone' => 'required|string',
-            'email' => 'required|email|unique:doctors'
-        ]);
 
-        return Doctor::create($data);
-    }
 
     public function show($id)
     {
