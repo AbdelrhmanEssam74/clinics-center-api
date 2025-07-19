@@ -126,20 +126,23 @@ Route::get('/patient/profile', [PatientProfileController::class, 'show'])
     ->name('patient.profile.show')
     ->middleware('auth:sanctum');
 
-
 // update patient profile
 Route::put('/patient/profile/update', [PatientProfileController::class, 'update'])
-    ->name('patient.profile.update')
     ->middleware('auth:sanctum');
-// records
+    // update patient image
+Route::post('/patient/profile/update_image', [PatientProfileController::class, 'updateImage'])
+    ->middleware('auth:sanctum');
+    // reports
 Route::middleware('auth:sanctum')->group(function () {
+    // display
     Route::get('/patient/medical_reports', [MedicalReportController::class, 'index']);
+    // add
     Route::post('/patient/medical_reports', [MedicalReportController::class, 'store']);
-    Route::delete('/patient/medical_reports/{report}', [MedicalReportController::class, 'destroy']);
+    // delete
+    Route::delete('/patient/medical_reports/{report}', [MedicalReportController::class, 'destroy']);  
     // doctor access report for patients
-    Route::get('doctor/patients/{patient}/reports', [MedicalReportController::class, 'getPatientReports']);
+     Route::get('patients/{patient}/reports', [MedicalReportController::class, "getPatientReports"]);
 
-    Route::get('doctor/reports/{report}', [MedicalReportController::class, 'getReport']);
 });
 //
 
