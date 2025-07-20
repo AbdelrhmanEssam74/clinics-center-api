@@ -102,7 +102,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('review-rating/show/{review_id}', [Reviews_Ratings_Doctors::class, 'show'])->name('show.review');
     Route::get('review-rating/doctorReviews/{review_id}', [Reviews_Ratings_Doctors::class, 'doctorReviews'])->name('doctorReviews.review');
     Route::get('review-rating/myReviews', [Reviews_Ratings_Doctors::class, 'myReviews'])->name('myReviews.review');
+    // get all reviews
+    Route::get('review-rating/allReviews', [Reviews_Ratings_Doctors::class, 'allReviews'])->name('allReviews.review');
 });
+    // get average rating for a specific doctor
+    Route::get('review-rating/doctorReviewsAverage/{doctor_id}', [Reviews_Ratings_Doctors::class, 'doctorReviewsAverage'])->name('doctorReviewsAverage.review');
 // search task - Mariam
 // // Get all doctors
 Route::get('/doctors', [SearchController::class, 'index'])

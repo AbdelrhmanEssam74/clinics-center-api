@@ -154,6 +154,19 @@ class Reviews_Ratings_Doctors extends Controller
 
         return response()->json(['reviews' => $reviews], 200);
     }
+    public function allReviews()
+    {
+        $reviews = Review::with('user:id,name', 'doctor:id,name')
+            ->latest()
+            ->get();
 
+        return response()->json(['reviews' => $reviews], 200);
+    }
+    public function doctorReviewsAverage($doctor_id)
+    {
+        $average = Review::where('doctor_id', $doctor_id)
+            ->avg('rating');
 
+        return response()->json(['average_rating' => $average], 200);
+    }
 }
