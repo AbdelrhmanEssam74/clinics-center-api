@@ -26,16 +26,18 @@ class MedicalReportController extends Controller
         }
         $request->validate([
             'title' => 'required|string|max:255',
-            'report' => 'required|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:2048',
+            'report' => 'required|file|mimes:jpg,jpeg,png,web|max:2048',
             'description' => 'nullable|string',
             'report_date' => 'required|date'
         ]);
 
         $file = $request->file('report');
         $filename = $file->getClientOriginalName();
+
         $path = $file->storeAs('medical_reports', $filename, 'public');
+        
         $data['report'] = 'storage/' . $path;
-       
+    
         $report = $patient->medicalReports()->create([
             'title' => $request->title,
             'file_path' => $path,
@@ -59,32 +61,16 @@ class MedicalReportController extends Controller
         $report->delete();
         return response()->json(['message' => 'Report deleted successfully']);
     }
-
-
+// for doctor dispaly
 public function getPatientReports(Patient $patient)
 {
     $doctor = auth()->user()->doctor;
     
     if (!$doctor->appointments()->where('patient_id', $patient->id)->exists()) {
-        return response()->json(['message' => 'Not authorized to view these reports'], 403);
+        return response()->json(['message' => 'error'], 403);
     }
 
     $reports = $patient->medicalReports()->latest()->get();
     return response()->json($reports);
-}
-
-public function getReport(MedicalReport $report)
-{
-    $doctor = auth()->user()->doctor;
-    
-    if (!$doctor->appointments()->where('patient_id', $report->patient_id)->exists()) {
-        return response()->json(['message' => 'Not authorized to view this report'], 403);
-    }
-
-    if (!Storage::disk('public')->exists($report->file_path)) {
-        return response()->json(['message' => 'File not found'], 404);
-    }
-
-    return response()->file(storage_path('app/public/' . $report->file_path));
 }
 }

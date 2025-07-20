@@ -25,7 +25,6 @@ class PatientProfileController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'Unauthenticated. Please login and try again.',
-                'status' => 'error',
             ], 401);
         }
         $patient = $user->patient;
@@ -66,22 +65,7 @@ class PatientProfileController extends Controller
         // check Authorization
         if (! Gate::allows('manage-profile', $patient)) {
             abort(403, 'error,Unauthorized');
-        }           
-        $imagePath = $user->image;
-        if ($request->hasFile('image')) {
-            if ($user->image) {
-                $oldImage = str_replace('storage/users/', '', $user->image);
-                Storage::disk('public')->delete('users/' . $oldImage);
-            }
         }
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('users', $filename, 'public');
-            $user->image == 'storage/' . $filename;
-        }
-
-
 
         $patient->update([
             'phone' => $request->phone,
@@ -94,7 +78,6 @@ class PatientProfileController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'image' => $imagePath,
         ]);
 
         return response()->json([
@@ -102,5 +85,29 @@ class PatientProfileController extends Controller
             'Patient Profile' => $patient,
             'User' => $user,
         ], 200);
+    }
+    public function updateImage(Request $request)
+    {
+        $user = Auth::user();
+        // delete old image
+        if ($request->hasFile('image')) {
+            if ($user->image) {
+                $oldImage = str_replace('storage/users/', '', $user->image);
+                Storage::disk('public')->delete('users/' . $oldImage);
+            }
+        }
+            // store
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('users', $filename, 'public');
+
+            $user->image = 'storage/users/' . $filename;
+            $user->save();
+        
+            return response()->json([
+            'success' => true,
+            'path' => asset($user->image)
+        ]);
+        
     }
 }
