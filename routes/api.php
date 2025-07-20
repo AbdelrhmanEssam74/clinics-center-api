@@ -192,6 +192,10 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('admin/slots', SlotController::class);
     Route::apiResource('admin/users', UserController::class);
     Route::get('admin/dashboard-data', [AdminController::class, 'dashboardData']);
+    Route::put('admin/profile/update', [AdminController::class, 'updateAdminProfile']);
+    Route::post('admin/profile/update_image', [AdminController::class, 'updateImage']);
+
+    Route::get('admin/profile', [AdminController::class, 'show']);
 });
 
 
