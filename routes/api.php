@@ -11,7 +11,7 @@ use App\Http\Controllers\API\patient\PatientProfileController;
 use App\Http\Controllers\API\Rating\Reviews_Ratings_Doctors;
 use App\Http\Controllers\API\Search\SearchController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\users\UserController;
+use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\AppointmentController;
 use App\Http\Controllers\admin\DoctorController;
 use App\Http\Controllers\admin\PatientController;
@@ -189,8 +189,6 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('admin/doctors', DoctorController::class);
 
     Route::apiResource('admin/appointments', AppointmentController::class);
-    Route::patch('admin/appointments/{id}/status', [AppointmentController::class, 'updateStatusByAdmin']);
-
     Route::apiResource('admin/slots', SlotController::class);
     Route::apiResource('admin/users', UserController::class);
     Route::get('admin/dashboard-data', [AdminController::class, 'dashboardData']);
@@ -201,8 +199,6 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index']);
-    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
-
     Route::post('/contacts', [ContactController::class, 'store']);
 });
 ?>
