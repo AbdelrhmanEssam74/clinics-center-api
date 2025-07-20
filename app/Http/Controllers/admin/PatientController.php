@@ -7,30 +7,27 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
-{ public function index()
+{
+    public function index(Request $request)
     {
-    return Patient::with('user')->get();
+        $query = Patient::with('user');
+
+        if ($request->filled('name')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->name . '%');
+            });
+        }
+
+        return $query->get();
     }
 
- public function store(Request $request)
-{
-    $data = $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'name' => 'required|string',
-        'gender' => 'required|in:male,female',
-        'date_of_birth' => 'required|date',
-        'phone' => 'required|string',
-        'address' => 'nullable|string',
-        'medical_record_number' => 'required|unique:patients'
-    ]);
 
-    return Patient::create($data);
-}
+
 
 
     public function show($id)
     {
-       return Patient::with('user')->findOrFail($id);
+        return Patient::with('user')->findOrFail($id);
     }
 
     public function update(Request $request, $id)

@@ -5,7 +5,11 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
-
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\User;
+use App\Mail\AppointmentMail;
+use Illuminate\Support\Facades\Mail;
 class AppointmentController extends Controller
 {
     public function index(Request $request)
@@ -65,7 +69,36 @@ class AppointmentController extends Controller
     {
         return Appointment::with(['doctor.user', 'patient.user'])->findOrFail($id);
     }
+public function updateStatusByAdmin(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|string|in:pending,confirmed,cancelled,completed'
+    ]);
 
+    $appointment = Appointment::with(['doctor.user', 'patient.user'])->find($id);
+
+    if (!$appointment) {
+        return response()->json(['message' => 'Appointment not found'], 404);
+    }
+
+    $appointment->status = $request->input('status');
+    $appointment->save();
+
+    $patient = $appointment->patient;
+    $patientUser = $patient?->user;
+    $patientEmail = $patientUser?->email;
+
+    $doctor = $appointment->doctor;
+    
+    if (in_array($request->status, ['confirmed', 'cancelled']) && $patientEmail) {
+        Mail::to($patientEmail)->send(new AppointmentMail($patient, $appointment, $doctor, $request->status));
+    }
+
+    return response()->json([
+        'message' => 'Appointment status updated by admin successfully',
+        'appointment' => $appointment
+    ]);
+}
     public function update(Request $request, $id)
     {
         $appointment = Appointment::findOrFail($id);

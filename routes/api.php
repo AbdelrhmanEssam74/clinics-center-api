@@ -189,6 +189,8 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::apiResource('admin/doctors', DoctorController::class);
 
     Route::apiResource('admin/appointments', AppointmentController::class);
+    Route::patch('admin/appointments/{id}/status', [AppointmentController::class, 'updateStatusByAdmin']);
+
     Route::apiResource('admin/slots', SlotController::class);
     Route::apiResource('admin/users', UserController::class);
     Route::get('admin/dashboard-data', [AdminController::class, 'dashboardData']);
@@ -199,6 +201,8 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index']);
+    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
+
     Route::post('/contacts', [ContactController::class, 'store']);
 });
 ?>
