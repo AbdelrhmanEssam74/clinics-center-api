@@ -34,7 +34,7 @@ class AdminController extends Controller
             'admin' => [
                 'id' => $admin->id,
                 'name' => $admin->name,
-                'image' =>  asset($admin->image),
+                'image' =>  asset('storage/'.$admin->image),
                 'role' => $admin->role->name,
             ],
         ]);
@@ -52,7 +52,7 @@ class AdminController extends Controller
                 'id' => $admin->id,
                 'name' => $admin->name,
                 'email' => $admin->email,
-                'image' => $admin->image ? asset($admin->image) : asset('storage/defaults/admin.png'),
+                'image' => $admin->image ? asset('storage/' . $admin->image) : asset('storage/defaults/admin.png'),
                 'phone' => $admin->phone,
                 // 'address' => $admin->address,
                 // 'gender' => $admin->gender,
