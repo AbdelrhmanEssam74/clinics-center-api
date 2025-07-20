@@ -24,7 +24,7 @@ return [
                 'name' => $this->user->name,
                 'email' => $this->user->email,
                 'phone' => $this->user->phone,
-                'image' => $this->user->image,
+                'image' => asset($this->user->image),
                 'profile_description' => $this->user->profile_description,
                 'role_id' => $this->user->role_id,
             ],
