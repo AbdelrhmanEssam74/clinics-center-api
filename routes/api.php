@@ -54,6 +54,8 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 // Doctor API routes - Abdelrhman
 Route::get('doctor/profile', [DoctorHomeController::class, 'home'])
     ->name('doctor.profile')->middleware('auth:sanctum');
+    Route::get('doctors/four', [DoctorHomeController::class, 'index']);
+
 Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
     ->name('doctor.profile')->middleware('auth:sanctum');
 // Doctor appointments -> get all appointments for a doctor

@@ -8,6 +8,30 @@ use Illuminate\Http\Request;
 
 class DoctorHomeController extends Controller
 {
+public function index()
+{
+    $doctors = Doctor::with('user:id,name,image')
+        ->take(4) 
+        ->get()
+        ->map(function ($doctor) {
+            return [
+                'id' => $doctor->id,
+                'name' => $doctor->user->name ?? 'Unnamed',
+
+                'specialty' => $doctor->specialty,
+                'image' => $doctor->user->image ? asset( $doctor->user->image) : null,
+                'social' => [  
+                    'fa-brands fa-facebook-f',
+                    'fa-brands fa-twitter',
+                    'fa-brands fa-google',
+                    'fa-brands fa-instagram',
+                ]
+            ];
+        });
+
+    return response()->json($doctors);
+}
+
     public function home()
     {
         $user = auth()->user();
