@@ -10,68 +10,72 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\Hash;
 
-use function Pest\Laravel\json;
-
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $query = User::query();
-
 
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        $users = $query->get();
+        $users = $query->get()->map(function ($user) {
+            if ($user->image) {
+                $user->image = asset('storage/' . $user->image);
+            }
+            return $user;
+        });
 
         return UserResource::collection($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreUserRequest $request)
     {
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('users', 'public');
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('users', $filename, 'public');
+            $data['image'] = 'users/' . $filename;
         }
 
         $data['password'] = Hash::make($data['password']);
 
         $user = User::create($data);
 
+        if ($user->image) {
+            $user->image = asset('storage/' . $user->image);
+        }
+
         $user = new UserResource($user);
         $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             "user" => $user,
             "token" => $token
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-
     public function show(User $user)
     {
+        if ($user->image) {
+            $user->image = asset('storage/' . $user->image);
+        }
+
         return new UserResource($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateUserRequest $request, User $user)
     {
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('users', 'public');
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('users', $filename, 'public');
+            $data['image'] = 'users/' . $filename;
         }
 
         if (isset($data['password'])) {
@@ -80,20 +84,21 @@ class UserController extends Controller
 
         $user->update($data);
 
+        if ($user->image) {
+            $user->image = asset('storage/' . $user->image);
+        }
+
         return new UserResource($user);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
         if (!$user) {
-            return response() . join(['massage' => "User Not Found"]);
-        } else {
-            $user->delete();
-
-            return response()->json(['massage' => "user deleted sucssfully"], 200);
+            return response()->json(['massage' => "User Not Found"]);
         }
+
+        $user->delete();
+
+        return response()->json(['massage' => "user deleted sucssfully"], 200);
     }
 }

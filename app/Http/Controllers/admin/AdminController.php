@@ -16,7 +16,6 @@ class AdminController extends Controller
 {
     public function dashboardData()
     {
-
         $admin = Auth::user();
 
         if (!$admin) {
@@ -34,11 +33,12 @@ class AdminController extends Controller
             'admin' => [
                 'id' => $admin->id,
                 'name' => $admin->name,
-                'image' =>  asset('storage/'.$admin->image),
+                'image' => $admin->image ? asset($admin->image) : asset('storage/defaults/admin.png'),
                 'role' => $admin->role->name,
             ],
         ]);
     }
+
     public function show()
     {
         $admin = Auth::user();
@@ -47,26 +47,19 @@ class AdminController extends Controller
             return response()->json(['error' => 'Admin not authenticated'], 401);
         }
 
-        return response()->json(
-            [
-                'id' => $admin->id,
-                'name' => $admin->name,
-                'email' => $admin->email,
-                'image' => $admin->image ? asset( $admin->image) : asset('storage/defaults/admin.png'),
-                'phone' => $admin->phone,
-                // 'address' => $admin->address,
-                // 'gender' => $admin->gender,
-                // 'date_of_birth' => $admin->date_of_birth,
-                'profile_description' => $admin->profile_description,
-                'role' => $admin->role->name,
-            ]
-        );
+        return response()->json([
+            'id' => $admin->id,
+            'name' => $admin->name,
+            'email' => $admin->email,
+            'image' => $admin->image ? asset($admin->image) : asset('storage/defaults/admin.png'),
+            'phone' => $admin->phone,
+            'profile_description' => $admin->profile_description,
+            'role' => $admin->role->name,
+        ]);
     }
 
-    // update
     public function updateAdminProfile(Request $request)
     {
-
         $admin = Auth::user();
 
         $data = [
@@ -78,6 +71,7 @@ class AdminController extends Controller
             'new_password' => 'sometimes|required_with:current_password|min:8',
             'new_password_confirmation' => 'sometimes|required_with:new_password|same:new_password'
         ];
+
         $validated = $request->validate($data);
 
         if ($request->has('current_password') && $request->has('new_password')) {
@@ -85,13 +79,14 @@ class AdminController extends Controller
                 'password' => bcrypt($validated['new_password'])
             ]);
         }
+
         if ($request->hasFile('image')) {
             if ($admin->image && Storage::exists($admin->image)) {
                 Storage::delete($admin->image);
             }
 
-            $path = $request->file('image')->store('admin', 'public');
-            $validated['image'] = 'storage/' . $path;
+            $path = $request->file('image')->storeAs('users', time() . '_' . $request->file('image')->getClientOriginalName(), 'public');
+            $validated['image'] = 'storage/users/' . basename($path);
         }
 
         $profileData = collect($validated)->except([
@@ -106,27 +101,30 @@ class AdminController extends Controller
             'message' => 'Profile updated successfully',
         ]);
     }
-      public function updateImage(Request $request)
+
+    public function updateImage(Request $request)
     {
         $user = Auth::user();
-        // delete old image
+
         if ($request->hasFile('image')) {
             if ($user->image) {
                 $oldImage = str_replace('storage/users/', '', $user->image);
                 Storage::disk('public')->delete('users/' . $oldImage);
             }
-        }
-            // store
+
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('admin', $filename, 'public');
+            $file->storeAs('users', $filename, 'public');
 
-            $user->image = 'storage/admin/' . $filename;
+            $user->image = 'storage/users/' . $filename;
             $user->save();
-        
+
             return response()->json([
-            'success' => true,
-            'path' => asset($user->image)
-        ]);    
+                'success' => true,
+                'path' => asset($user->image)
+            ]);
+        }
+
+        return response()->json(['message' => 'No image uploaded'], 400);
     }
 }

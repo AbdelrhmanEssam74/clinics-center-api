@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 
 class DoctorPatientController extends Controller
 {
-    // get all patients which had appointments with the doctor
-  public function index(Request $request)
+    public function index(Request $request)
     {
         $doctor = auth()->user();
 
@@ -21,9 +20,9 @@ class DoctorPatientController extends Controller
                 $user = $appointment->patient->user;
 
                 if ($user && $user->image) {
-                    $user->image =asset('storage/users/' . basename($user->image));
+                    $user->image = asset($user->image);
                 } else {
-                    $user->image = null; 
+                    $user->image = null;
                 }
 
                 return $appointment;
@@ -34,20 +33,26 @@ class DoctorPatientController extends Controller
             'data' => $patients
         ]);
     }
-    // get specific patient by id
+
     public function show($id)
     {
         $patient = Appointment::where('doctor_id', 1)
             ->whereHas('patient', function ($query) use ($id) {
                 $query->where('id', $id);
             })
-            ->with(['patient.user:id,email,name'])
+            ->with(['patient.user:id,email,name,image'])
             ->first();
 
         if (!$patient) {
             return response()->json([
                 'message' => 'Patient not found'
             ], 404);
+        }
+
+        $user = $patient->patient->user;
+
+        if ($user && $user->image) {
+            $user->image = asset($user->image);
         }
 
         return response()->json([
