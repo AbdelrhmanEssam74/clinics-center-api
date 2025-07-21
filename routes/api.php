@@ -207,6 +207,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts', [ContactController::class, 'index']);
+    Route::delete('/contacts/{id}', [ContactController::class, 'destroy']);
     Route::post('/contacts', [ContactController::class, 'store']);
 });
 ?>
