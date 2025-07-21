@@ -114,7 +114,7 @@ Route::get('/doctors', [SearchController::class, 'index'])
 
 // get specific doctor by id
 Route::get('/doctors/{id}', [SearchController::class, 'getById'])
-    ->name('show.doctor.id');
+    ->name('show.doctor.id')->middleware('auth:sanctum');
 
 // search
 Route::get('/doctors/search/{searchTerm}', [SearchController::class, 'search']);
@@ -143,7 +143,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // add
     Route::post('/patient/medical_reports', [MedicalReportController::class, 'store']);
     // delete
-    Route::delete('/patient/medical_reports/{report}', [MedicalReportController::class, 'destroy']);  
+    Route::delete('/patient/medical_reports/{report}', [MedicalReportController::class, 'destroy']);
     // doctor access report for patients
      Route::get('patients/{patient}/reports', [MedicalReportController::class, "getPatientReports"]);
 
