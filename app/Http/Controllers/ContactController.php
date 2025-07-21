@@ -20,27 +20,38 @@ class ContactController extends Controller
     {
         // Validate the request data
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'subject' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'message' => 'required|string',
+            'name' => 'required|string|min:3',
+            'email' => 'required|email',
+            'subject' => 'required|string|min:10',
+            'phone' => 'required|string|min:10',
+            'message' => 'required|string|min:10',
+        ], [
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'subject.required' => 'Subject is required',
+            'message.required' => 'Message is required',
+            'phone.required' => 'Phone number is required',
+            'phone.min' => 'Phone number must be  10 numbers ',
+            'message.min' => 'Message must be at least 10 characters long',
         ]);
 
         // Store the contact message in the database
         Contact::create($request->all());
         return response()->json(["massage" => 'Your message has been sent successfully!'], 201);
     }
+
+
+
     public function destroy($id)
-{
-    $contact = Contact::find($id);
+    {
+        $contact = Contact::find($id);
 
-    if (!$contact) {
-        return response()->json(['message' => 'Contact not found'], 404);
+        if (!$contact) {
+            return response()->json(['message' => 'Contact not found'], 404);
+        }
+
+        $contact->delete();
+
+        return response()->json(['message' => 'Contact deleted successfully']);
     }
-
-    $contact->delete();
-
-    return response()->json(['message' => 'Contact deleted successfully']);
-}
 }
