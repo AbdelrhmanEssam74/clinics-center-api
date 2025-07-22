@@ -10,6 +10,8 @@ class DoctorController extends Controller
 {
     public function index(Request $request)
     {
+        // $query = Doctor::with(['Slot', 'user','specialty']) ->where('status', 'pending')
+        //         ->get();
         $query = Doctor::with(['Slot', 'user']);
 
         if ($request->filled('name')) {
