@@ -127,4 +127,53 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'No image uploaded'], 400);
     }
+
+
+    // mamage recently registered doctors
+    public function pendingDoctors()
+{
+
+    $doctors = Doctor::with(['user', 'specialty'])
+                ->where('status', 'pending')
+                ->get();
+    
+    return response()->json($doctors);
+}
+
+public function approveDoctor(Doctor $doctor)
+{
+    $doctor->update(['status' => '	accepted']);
+    
+    return response()->json(['message' => 'Doctor approved successfully']);
+}
+
+public function rejectDoctor(Request $request, Doctor $doctor)
+{
+    $request->validate(['reason' => 'required|string']);
+    
+    $doctor->update([
+        'status' => 'rejected',
+        'rejection_reason' => $request->reason
+    ]);
+    
+    return response()->json(['message' => 'Doctor rejected']);
+}
+
+
+    // for doctor dispaly
+public function getDoctorLicence(Doctor $doctor)
+{
+    if (!$doctor->license_file) {
+        return response()->json([
+            'message' => 'No license file found for this doctor',
+        ], 404);
+    }
+
+    $licenseUrl = asset($doctor->license_file);
+    
+   
+    return response()->json([
+            'license_url' => $licenseUrl,
+    ]);
+}
 }

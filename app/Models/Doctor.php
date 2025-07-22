@@ -12,8 +12,13 @@ class Doctor extends Model
         'user_id',
         'experience_years',
         'appointment_fee', // Added appointment_fee field
+        'license_file',
+        'status',
+        'rejection_reason'
     ];
-
+protected $attributes = [
+    'status' => 'pending'
+];
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
