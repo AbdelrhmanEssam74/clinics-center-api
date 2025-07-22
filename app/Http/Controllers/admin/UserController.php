@@ -28,8 +28,8 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $data = $request->validated();
 
+        $data = $request->validated();
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -38,8 +38,8 @@ class UserController extends Controller
         }
         $data['password'] = Hash::make($data['password']);
         $data['role_id'] = $data['role_id'] ?? 5;
-        $data['profile_description'] = $data['profile_description'] 
-        ?? ($data['role_id'] == 2 ? 'Doctor' : 'Patient');
+     $data['profile_description'] = $data['profile_description']
+    ?? ($data['role_id'] == 2 ? 'Doctor' : ($data['role_id'] == 1 ? 'Admin' : 'Patient'));
 
 
         $user = User::create($data);
@@ -53,6 +53,10 @@ class UserController extends Controller
     } elseif($data['role_id'] == 1){
         $this->admin($user, $data);
     }
+
+    elseif ($data['role_id'] == 1) {
+    $this->Admin($user, $data);
+}
 
 
         if ($user->image) {
@@ -114,8 +118,7 @@ class UserController extends Controller
 
     // handle admin 
     public function Admin(User $admin, array $request){
-        
-        $admin = new User();
+           
         $admin->name = $request['name'] ;
         $admin->email = $request['email'] ;
         $admin->save();
