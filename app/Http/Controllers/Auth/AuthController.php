@@ -105,7 +105,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
         // if role id == 2 then check if doctor is active
-        if ($user && $user->role_id == 2 && $user->doctor && $user->doctor->status != 'active') {
+        if ($user && $user->role_id == 2 && $user->doctor && $user->doctor->status != 'accepted') {
             return response()->json([
                 'user' => $user,
                 'message' => 'Doctor account is not active',
