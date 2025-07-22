@@ -67,16 +67,12 @@ class AuthController extends Controller
             $path = $file->storeAs('licenses', $filename, 'public');
             $doctor['license_file'] = 'storage/licenses/' . $filename;
         }
-
         $doctor->user_id = $user->id;
         $doctor->specialty_id = $request['specialty_id'] ?? '1';
         $doctor->experience_years = $request['experience_years'] ?? '1';
         $doctor->appointment_fee = $request['appointment_fee'] ?? '100';
         $doctor->status = $request['status'] ?? 'pending';
-
-
         $doctor->save();
-
         return response()->json([
             "doctorData" => $doctor,
         ]);
