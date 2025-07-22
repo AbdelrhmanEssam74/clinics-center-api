@@ -54,7 +54,7 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 // Doctor API routes - Abdelrhman
 Route::get('doctor/profile', [DoctorHomeController::class, 'home'])
     ->name('doctor.profile')->middleware('auth:sanctum');
-    Route::get('doctors/four', [DoctorHomeController::class, 'index']);
+Route::get('doctors/four', [DoctorHomeController::class, 'index']);
 
 Route::put('doctor/profile/update', [DoctorProfileController::class, 'update'])
     ->name('doctor.profile')->middleware('auth:sanctum');
@@ -107,8 +107,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // get all reviews
     Route::get('review-rating/allReviews', [Reviews_Ratings_Doctors::class, 'allReviews'])->name('allReviews.review');
 });
-    // get average rating for a specific doctor
-    Route::get('review-rating/doctorReviewsAverage/{doctor_id}', [Reviews_Ratings_Doctors::class, 'doctorReviewsAverage'])->name('doctorReviewsAverage.review');
+// get average rating for a specific doctor
+Route::get('review-rating/doctorReviewsAverage/{doctor_id}', [Reviews_Ratings_Doctors::class, 'doctorReviewsAverage'])->name('doctorReviewsAverage.review');
 // search task - Mariam
 // // Get all doctors
 Route::get('/doctors', [SearchController::class, 'index'])
@@ -135,10 +135,10 @@ Route::get('/patient/profile', [PatientProfileController::class, 'show'])
 // update patient profile
 Route::put('/patient/profile/update', [PatientProfileController::class, 'update'])
     ->middleware('auth:sanctum');
-    // update patient image
+// update patient image
 Route::post('/patient/profile/update_image', [PatientProfileController::class, 'updateImage'])
     ->middleware('auth:sanctum');
-    // reports
+// reports
 Route::middleware('auth:sanctum')->group(function () {
     // display
     Route::get('/patient/medical_reports', [MedicalReportController::class, 'index']);
@@ -147,7 +147,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // delete
     Route::delete('/patient/medical_reports/{report}', [MedicalReportController::class, 'destroy']);
     // doctor access report for patients
-     Route::get('patients/{patient}/reports', [MedicalReportController::class, "getPatientReports"]);
+    Route::get('patients/{patient}/reports', [MedicalReportController::class, "getPatientReports"]);
 
 });
 //
