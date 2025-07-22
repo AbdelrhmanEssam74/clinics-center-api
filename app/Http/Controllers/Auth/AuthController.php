@@ -39,9 +39,6 @@ class AuthController extends Controller
         if ($data['role_id'] == 2) {
             $this->Doctor($user, $request);
             Mail::to($user->email)->send(new DoctorAccountUnderReview($user, 'pending'));
-            return response()->json([
-                'user' => $user
-            ]);
         } else {
             $this->Patient($user, $data);
         }
