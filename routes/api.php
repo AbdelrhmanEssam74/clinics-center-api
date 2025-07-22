@@ -202,7 +202,16 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('admin/profile/update_image', [AdminController::class, 'updateImage']);
 
     Route::get('admin/profile', [AdminController::class, 'show']);
+    //mamage recently registered doctors
+    Route::get('/manage_pending_doctors', [AdminController::class, 'pendingDoctors']);
+    Route::post('/approve-doctor/{doctor}', [AdminController::class, 'approveDoctor']);
+    Route::post('/reject-doctor/{doctor}', [AdminController::class, 'rejectDoctor']);
+
+    Route::get('/doctor/{doctor}/licence', [AdminController::class, 'getDoctorLicence']);
+
 });
+// specilaties for doctor register or add doctor
+Route::get('/specialties', [AuthController::class, 'getSpecialties']);
 
 
 // Contact Us routes => Ahmed abdelhalim

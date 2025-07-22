@@ -27,14 +27,13 @@ class StoreUserRequest extends FormRequest
         'name' => 'required|string|min:2',
         'email' => 'required|email|unique:users,email',
         'password' => 'required|string|min:6',
-        'phone' => 'required|regex:/^[0-9]{10,15}$/',
+        'phone' => 'required|string|regex:/^01[0-9]{9}$/',
         'image' => 'nullable',
         'profile_description' => 'nullable|string',
         'role_id' => 'required|integer|exists:roles,id',
         'address' => 'string', 'max:255',
         'gender' => 'nullable|string|in:Male,Female',
-        'date_of_birth' => 'nullable|date',
-        ];
+        'date_of_birth' => ['nullable','date','before_or_equal:today',],        ];
     }
     
 }
