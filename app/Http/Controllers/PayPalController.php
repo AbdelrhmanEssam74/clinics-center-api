@@ -12,7 +12,7 @@ class PayPalController extends Controller
     /**
      * Create a PayPal order using the doctor's appointment fee.
      */
-    public function createTransaction(Request $request)
+   public function createTransaction(Request $request)
     {
         $appointmentId = $request->appointment_id;
 
@@ -70,13 +70,16 @@ class PayPalController extends Controller
         ]);
     }
 
+    /**
+     * Capture the PayPal order after approval and show alert to user.
+     */
     public function captureTransaction(Request $request)
     {
         if (!$request->has('token') || !$request->has('appointment_id')) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Missing required parameters.'
-            ]);
+            return response("<script>
+                alert('❌ Missing required parameters.');
+                window.location.href = '/';
+            </script>");
         }
 
         $provider = new PayPal();
@@ -84,7 +87,6 @@ class PayPalController extends Controller
         $provider->getAccessToken();
 
         $response = $provider->capturePaymentOrder($request->token);
-
         $status = $response['status'] ?? 'unknown';
 
         if ($status === 'COMPLETED') {
@@ -94,25 +96,27 @@ class PayPalController extends Controller
                 $appointment->save();
             }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Payment completed successfully.',
-                'payment_status' => 'paid'
-            ]);
+            return response("<script>
+                alert('✅ Payment completed successfully!');
+                window.location.href = '/';
+            </script>");
         }
 
-        return response()->json([
-            'status' => 'fail',
-            'message' => 'Payment not completed.',
-            'paypal_status' => $status
-        ]);
+        return response("<script>
+            alert('❌ Payment not completed.');
+            window.location.href = '/';
+        </script>");
     }
 
+    /**
+     * Handle PayPal payment cancellation.
+     */
     public function cancelTransaction()
     {
-        return response()->json([
-            'status' => 'cancelled',
-            'message' => 'Payment was cancelled by the user.'
-        ]);
+        return response("<script>
+            alert('⚠️ Payment was cancelled by the user.');
+            window.location.href = '/';
+        </script>");
     }
+
 }
