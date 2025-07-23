@@ -12,67 +12,68 @@ class PayPalController extends Controller
     /**
      * Create a PayPal order using the doctor's appointment fee.
      */
- public function createTransaction(Request $request)
-{
-    $appointmentId = $request->appointment_id;
+    public function createTransaction(Request $request)
+    {
+        $appointmentId = $request->appointment_id;
 
-    $appointment = Appointment::with('doctor')->find($appointmentId);
+        $appointment = Appointment::with('doctor')->find($appointmentId);
 
-    if (!$appointment || !$appointment->doctor || !$appointment->doctor->appointment_fee) {
+        if (!$appointment || !$appointment->doctor || !$appointment->doctor->appointment_fee) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Invalid appointment or doctor not found.'
+            ]);
+        }
+
+        $egpAmount = number_format($appointment->doctor->appointment_fee, 2);
+
+        $exchangeRate = 30.9;
+        $usdAmount = number_format($egpAmount / $exchangeRate, 2);
+
+        $provider = new PayPal();
+        $provider->setApiCredentials(config('paypal'));
+        $provider->getAccessToken();
+
+        $response = $provider->createOrder([
+            "intent" => "CAPTURE",
+            "application_context" => [
+                "return_url" => route('paypal.success'),
+                "cancel_url" => route('paypal.cancel'),
+            ],
+            "purchase_units" => [
+                [
+                    "amount" => [
+                        "currency_code" => "USD",
+                        "value" => $usdAmount
+                    ],
+                    "description" => "Payment for appointment #$appointmentId"
+                ]
+            ]
+        ]);
+
+        if (isset($response['links'])) {
+            foreach ($response['links'] as $link) {
+                if ($link['rel'] === 'approve') {
+                    return response()->json([
+                        'status' => 'success',
+                        'url' => $link['href'],
+                        'appointment_id' => $appointmentId,
+                        'total_egp' => $egpAmount,
+                        'converted_usd' => $usdAmount
+                    ]);
+                }
+            }
+        }
+
         return response()->json([
             'status' => 'fail',
-            'message' => 'Invalid appointment or doctor not found.'
+            'message' => 'Unable to create PayPal transaction.'
         ]);
     }
 
-    $egpAmount = number_format($appointment->doctor->appointment_fee, 2);
-
-    $exchangeRate = 30.9;
-    $usdAmount = number_format($egpAmount / $exchangeRate, 2);
-
-    $provider = new PayPal();
-    $provider->setApiCredentials(config('paypal'));
-    $provider->getAccessToken();
-
-    $response = $provider->createOrder([
-        "intent" => "CAPTURE",
-        "application_context" => [
-            "return_url" => route('paypal.success'),
-            "cancel_url" => route('paypal.cancel'),
-        ],
-        "purchase_units" => [
-            [
-                "amount" => [
-                    "currency_code" => "USD",
-                    "value" => $usdAmount
-                ],
-                "description" => "Payment for appointment #$appointmentId"
-            ]
-        ]
-    ]);
-
-    if (isset($response['links'])) {
-        foreach ($response['links'] as $link) {
-            if ($link['rel'] === 'approve') {
-                return response()->json([
-                    'status' => 'success',
-                    'url' => $link['href'],
-                    'appointment_id' => $appointmentId,
-                    'total_egp' => $egpAmount,
-                    'converted_usd' => $usdAmount
-                ]);
-            }
-        }
-    }
-
-    return response()->json([
-        'status' => 'fail',
-        'message' => 'Unable to create PayPal transaction.'
-    ]);
-}
-
     /**
      * Capture the PayPal order after approval.
+     * Returns only the status of the transaction.
      */
     public function captureTransaction(Request $request)
     {
@@ -89,9 +90,9 @@ class PayPalController extends Controller
 
         $response = $provider->capturePaymentOrder($request->token);
 
+        // Return only the status
         return response()->json([
-            'status' => $response['status'] ?? 'unknown',
-            'response' => $response
+            'status' => $response['status'] ?? 'unknown'
         ]);
     }
 
