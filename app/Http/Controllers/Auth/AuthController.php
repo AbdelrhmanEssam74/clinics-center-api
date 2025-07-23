@@ -20,40 +20,44 @@ use App\Mail\DoctorAccountUnderReview;
 use Illuminate\Support\Facades\Mail;
 class AuthController extends Controller
 {
-    public function register(StoreUserRequest $request)
-    {
-        $data = $request->validated();
+public function register(StoreUserRequest $request)
+{
+    $data = $request->validated();
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('users', $filename, 'public');
-            $data['image'] = 'storage/users/' . $filename;
-        }
-
-        $data['password'] = Hash::make($data['password']);
-        $data['role_id'] = $data['role_id'] ?? 5;
-        $data['profile_description'] = $data['profile_description'] ??
-            ($data['role_id'] == 2 ? 'Doctor' : 'Patient');
-        $user = User::create($data);
-        if ($data['role_id'] == 2) {
-            $this->Doctor($user, $request);
-            Mail::to($user->email)->send(new DoctorAccountUnderReview($user, 'pending'));
-        } else {
-            $this->Patient($user, $data);
-        }
-        if ($user->image) {
-            $user->image = asset($user->image);
-        }
-
-        $user = new UserResource($user);
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            "user" => $user,
-            "token" => $token
-        ]);
+    if ($request->hasFile('image')) {
+        $data['image'] = $this->storeImage($request->file('image'));
     }
+
+    $data['password'] = Hash::make($data['password']);
+    $data['role_id'] = $data['role_id'] ?? 5;
+    $data['profile_description'] = $data['profile_description'] ??
+        ($data['role_id'] == 2 ? 'Doctor' : 'Patient');
+
+    $user = User::create($data);
+
+    if ($data['role_id'] == 2) {
+        $this->Doctor($user, $request);
+        Mail::to($user->email)->send(new DoctorAccountUnderReview($user, 'pending'));
+    } else {
+        $this->Patient($user, $data);
+    }
+
+    $user = new UserResource($user);
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        "user" => $user,
+        "token" => $token
+    ]);
+}
+
+
+    private function storeImage($file, $folder = 'users')
+{
+    $filename = time() . '_' . $file->getClientOriginalName();
+    $file->storeAs($folder, $filename, 'public');
+    return asset("storage/{$folder}/{$filename}");
+}
     // handle doctor
     public function Doctor(User $user, Request $request)
     {

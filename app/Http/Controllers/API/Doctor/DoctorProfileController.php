@@ -59,13 +59,7 @@ class DoctorProfileController extends Controller
 public function updateImage(Request $request)
 {
     if ($request->hasFile('image')) {
-        $file = $request->file('image');
-
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-
-        $file->move(public_path('uploads'), $filename);
-
-        $url = asset('uploads/' . $filename);
+        $url = $this->storeImage($request->file('image'));
 
         $user = Auth::user();
         $user->image = $url;
@@ -81,6 +75,15 @@ public function updateImage(Request $request)
         'success' => false,
         'message' => 'No image uploaded',
     ], 422);
+}
+
+
+
+private function storeImage($file, $folder = 'users')
+{
+    $filename = time() . '_' . $file->getClientOriginalName();
+    $file->storeAs($folder, $filename, 'public');
+    return asset("storage/{$folder}/{$filename}");
 }
 
 }
