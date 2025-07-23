@@ -5,7 +5,8 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Doctor;
-
+use App\Mail\DoctorAccountUnderReview;
+use Illuminate\Support\Facades\Mail;
 class DoctorController extends Controller
 {
     public function index(Request $request)
@@ -49,5 +50,38 @@ class DoctorController extends Controller
     {
         Doctor::findOrFail($id)->delete();
         return response()->json(['message' => 'Deleted']);
+    }
+
+    // method to set doctor status accepted and send email notification
+    public function setStatusAccepted($id)
+    {
+        $doctor = Doctor::with('user')->findOrFail($id);
+        $doctor->status = 'accepted';
+        $doctor->save();
+        Mail::to($doctor->user->email)->send(new DoctorAccountUnderReview($doctor, 'accepted'));
+        return response()->json(
+            [
+                'message' => 'Doctor account accepted and email sent'
+            ],
+            200
+        );
+    }
+    // method to set doctor status rejected and send email notification
+    public function setStatusRejected($id)
+    {
+        $doctor = Doctor::with('user')->findOrFail($id);
+        $doctor->status = 'rejected';
+        $doctor->save();
+        Mail::to($doctor->user->email)->send(new DoctorAccountUnderReview(
+            $doctor
+            ,
+            'rejected'
+        ));
+        return response()->json(
+            [
+                'message' => 'Doctor account rejected and email sent'
+            ],
+            200
+        );
     }
 }

@@ -209,6 +209,12 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
     Route::get('/doctor/{doctor}/licence', [AdminController::class, 'getDoctorLicence']);
 
+    // accept doctor account and send email notification
+    Route::put('admin/doctors/{id}/status/accepted', [DoctorController::class, 'setStatusAccepted'])
+        ->name('doctor.status.accepted');
+    // reject doctor account and send email notification
+    Route::put('admin/doctors/{id}/status/rejected', [DoctorController::class, 'setStatusRejected'])
+        ->name('doctor.status.rejected');
 });
 // specilaties for doctor register or add doctor
 Route::get('/specialties', [AuthController::class, 'getSpecialties']);
