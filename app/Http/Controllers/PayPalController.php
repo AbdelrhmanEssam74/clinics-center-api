@@ -26,7 +26,6 @@ class PayPalController extends Controller
         }
 
         $egpAmount = number_format($appointment->doctor->appointment_fee, 2);
-
         $exchangeRate = 30.9;
         $usdAmount = number_format($egpAmount / $exchangeRate, 2);
 
@@ -37,7 +36,7 @@ class PayPalController extends Controller
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
             "application_context" => [
-                "return_url" => route('paypal.success'),
+                "return_url" => route('paypal.success', ['appointment_id' => $appointmentId]),
                 "cancel_url" => route('paypal.cancel'),
             ],
             "purchase_units" => [
@@ -71,16 +70,12 @@ class PayPalController extends Controller
         ]);
     }
 
-    /**
-     * Capture the PayPal order after approval.
-     * Returns only the status of the transaction.
-     */
     public function captureTransaction(Request $request)
     {
-        if (!$request->has('token')) {
+        if (!$request->has('token') || !$request->has('appointment_id')) {
             return response()->json([
                 'status' => 'fail',
-                'message' => 'Missing token parameter.'
+                'message' => 'Missing required parameters.'
             ]);
         }
 
@@ -90,15 +85,29 @@ class PayPalController extends Controller
 
         $response = $provider->capturePaymentOrder($request->token);
 
-        // Return only the status
+        $status = $response['status'] ?? 'unknown';
+
+        if ($status === 'COMPLETED') {
+            $appointment = Appointment::find($request->appointment_id);
+            if ($appointment) {
+                $appointment->payment_status = 'paid';
+                $appointment->save();
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Payment completed successfully.',
+                'payment_status' => 'paid'
+            ]);
+        }
+
         return response()->json([
-            'status' => $response['status'] ?? 'unknown'
+            'status' => 'fail',
+            'message' => 'Payment not completed.',
+            'paypal_status' => $status
         ]);
     }
 
-    /**
-     * Handle PayPal payment cancellation.
-     */
     public function cancelTransaction()
     {
         return response()->json([
