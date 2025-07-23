@@ -4,12 +4,14 @@ namespace App\Http\Controllers\API\Doctor;
 use App\Http\Controllers\Controller;
 use App\Models\Slot;
 use Illuminate\Http\Request;
-
+use App\Models\Doctor;
 class DoctorTimeSlotsController extends Controller
 {
     public function index(Request $request)
     {
-        $doctor = auth()->user();
+        $user = auth()->user();
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
         $timeSlots = Slot::where('doctor_id', $doctor->id)
             ->orderBy('date', 'asc')
             ->orderBy('start_time', 'asc')
@@ -23,7 +25,9 @@ class DoctorTimeSlotsController extends Controller
 
     public function store(Request $request)
     {
-        $doctor = auth()->user();
+        $user = auth()->user();
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
         $request->validate([
             'date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i:s|before:end_time',
@@ -45,7 +49,9 @@ class DoctorTimeSlotsController extends Controller
 
     public function update(Request $request, $id)
     {
-        $doctor = auth()->user();
+        $user = auth()->user();
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
         if (!is_numeric($id)) {
             return response()->json([
                 'success' => false,
@@ -77,37 +83,41 @@ class DoctorTimeSlotsController extends Controller
             'data' => $slot,
         ]);
     }
-public function show($id)
-{
-    $doctor = auth()->user();
-   // Validate the ID is numeric
-    if (!is_numeric($id)) {
+    public function show($id)
+    {
+        $user = auth()->user();
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
+        // Validate the ID is numeric
+        if (!is_numeric($id)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid slot ID.',
+            ], 400);
+        }
+        // Find the slot that belongs to the doctor
+        $slot = Slot::where('id', $id)
+            ->where('doctor_id', $doctor->id)
+            ->first();
+        if (!$slot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Time slot not found or does not belong to the doctor',
+            ], 404);
+        }
         return response()->json([
-            'success' => false,
-            'message' => 'Invalid slot ID.',
-        ], 400);
+            'success' => true,
+            'message' => 'Time slot retrieved successfully',
+            'data' => $slot,
+        ]);
     }
-    // Find the slot that belongs to the doctor
-    $slot = Slot::where('id', $id)
-        ->where('doctor_id', $doctor->id)
-        ->first();
-    if (!$slot) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Time slot not found or does not belong to the doctor',
-        ], 404);
-    }
-    return response()->json([
-        'success' => true,
-        'message' => 'Time slot retrieved successfully',
-        'data' => $slot,
-    ]);
-}
 
     public function destroy($id)
     {
-        $doctor = auth()->user();
-       if (!is_numeric($id)) {
+        $user = auth()->user();
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
+        if (!is_numeric($id)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid slot ID.',

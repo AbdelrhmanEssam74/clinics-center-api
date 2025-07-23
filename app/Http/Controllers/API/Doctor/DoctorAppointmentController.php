@@ -26,9 +26,9 @@ class DoctorAppointmentController extends Controller
         if ($user->role_id !== 2) {
             return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
         }
-
-        $doctorId = $user->id;
-        $appointments = Appointment::where('doctor_id', $doctorId)
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
+        $appointments = Appointment::where('doctor_id', $doctor->id)
             ->with(
                 [
                     'patient:id,user_id,medical_record_number,date_of_birth,gender,phone',
@@ -45,6 +45,8 @@ class DoctorAppointmentController extends Controller
     public function upcoming(Request $request)
     {
         $user = auth()->user();
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
 
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
@@ -54,7 +56,7 @@ class DoctorAppointmentController extends Controller
             return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
         }
 
-        $doctorId = $user->id;
+        $doctorId = $doctor->id;
         $currentDateTime = Carbon::now();
         $upcomingAppointments = Appointment::where('doctor_id', $doctorId)
             ->where('appointment_date', '>', $currentDateTime)
@@ -69,13 +71,15 @@ class DoctorAppointmentController extends Controller
     public function show($id)
     {
         $user = auth()->user();
+        $user_id = $user->id;
+        $doctor = Doctor::where('user_id', $user_id)->first();
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         if ($user->role_id !== 2) {
             return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
         }
-        $doctorId = $user->id;
+        $doctorId = $doctor->id;
         $appointment = Appointment::where('doctor_id', $doctorId)
             ->where('id', $id)
             ->with(['patient'])
@@ -88,67 +92,70 @@ class DoctorAppointmentController extends Controller
         ], 200);
     }
     // update appointment status
-public function updateStatus(Request $request, $id)
-{
-    $user = auth()->user();
+    public function updateStatus(Request $request, $id)
+    {
+        $user = auth()->user();
+        $user_id = $user->id;
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-    if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401);
+        if ($user->role_id !== 2) {
+            return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
+        }
+
+        $doctor = Doctor::with([
+            'user' => function ($query) {
+                $query->select('id', 'name');
+            }
+        ])->where('user_id', $user->id)->first();
+
+        if (!$doctor) {
+            return response()->json(['message' => 'Doctor not found'], 404);
+        }
+
+        $request->validate([
+            'status' => 'required|string|in:pending,confirmed,cancelled,completed'
+        ]);
+
+        $appointment = Appointment::where('doctor_id', $doctor->id)
+            ->where('id', $id)
+            ->first();
+
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+        $patient = Patient::find($appointment->patient_id);
+        $patientUser = $patient ? User::find($patient->user_id) : null;
+        $patientEmail = $patientUser ? $patientUser->email : null;
+
+        $appointment->status = $request->input('status');
+        $appointment->save();
+
+        if ($request->input('status') === 'confirmed' && $patientEmail) {
+            Mail::to($patientEmail)->send(new AppointmentMail($patient, $appointment, $doctor, 'confirmed'));
+        }
+
+        if ($request->input('status') === 'cancelled' && $patientEmail) {
+            Mail::to($patientEmail)->send(new AppointmentMail($patient, $appointment, $doctor, 'cancelled'));
+        }
+
+
+        return response()->json([
+            'message' => 'Appointment status updated successfully',
+            'appointment' => $appointment
+        ], 200);
     }
-
-    if ($user->role_id !== 2) {
-        return response()->json(['message' => 'Forbidden: Not a doctor'], 403);
-    }
-
-    $doctor = Doctor::with(['user' => function ($query) {
-        $query->select('id', 'name');
-    }])->where('user_id', $user->id)->first();
-
-    if (!$doctor) {
-        return response()->json(['message' => 'Doctor not found'], 404);
-    }
-
-    $request->validate([
-        'status' => 'required|string|in:pending,confirmed,cancelled,completed'
-    ]);
-
-    $appointment = Appointment::where('doctor_id', $doctor->id)
-        ->where('id', $id)
-        ->first();
-
-    if (!$appointment) {
-        return response()->json(['message' => 'Appointment not found'], 404);
-    }
-
-    $patient = Patient::find($appointment->patient_id);
-    $patientUser = $patient ? User::find($patient->user_id) : null;
-    $patientEmail = $patientUser ? $patientUser->email : null;
-
-    $appointment->status = $request->input('status');
-    $appointment->save();
-
-    if ($request->input('status') === 'confirmed' && $patientEmail) {
-        Mail::to($patientEmail)->send(new AppointmentMail($patient, $appointment, $doctor, 'confirmed'));
-    }
-
-    if ($request->input('status') === 'cancelled' && $patientEmail) {
-        Mail::to($patientEmail)->send(new AppointmentMail($patient, $appointment, $doctor, 'cancelled'));
-    }
-
-
-    return response()->json([
-        'message' => 'Appointment status updated successfully',
-        'appointment' => $appointment
-    ], 200);
-}
     public function getAppointmentPayment($appointment_id)
     {
         $user = auth()->user();
+        $user_id = $user->id;
         $doctorId = Doctor::select('id')->where('user_id', $user->id)->first();
-        $appointment = Appointment::select('payment_status' , 'payment_method')->where('doctor_id', $doctorId->id)
+        $appointment = Appointment::select('payment_status', 'payment_method')->where('doctor_id', $doctorId->id)
             ->where('id', $appointment_id)
             ->first();
-                    if (!$appointment) {
+        if (!$appointment) {
             return response()->json(['message' => 'Appointment not found'], 404);
         }
         return response()->json([

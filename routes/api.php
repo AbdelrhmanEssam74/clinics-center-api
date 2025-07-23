@@ -154,7 +154,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // get patient id  => Ahmed  abdelhalim
 Route::get('/patient/id', function () {
-    $user = Auth::user();
+    $user = auth()->user();
 
     $patient = Patient::where('user_id', $user->id)->first();
 
